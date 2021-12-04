@@ -7,8 +7,13 @@ pub fn hello(name: &str) -> String {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+
     #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
+    fn hello_works() {
+        let expect = String::from("hello, rust-test");
+        let actual = hello("rust-test");
+
+        assert_eq!(expect, actual);
     }
 }
