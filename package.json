@@ -1,0 +1,12 @@
+{
+  "name": "serverless-edge",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/kino-ma/serverless-edge",
+  "author": "kino-ma <ma@kino.ma>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
