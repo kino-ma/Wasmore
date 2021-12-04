@@ -1,14 +1,8 @@
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
-extern "C" {
-    fn console_log(s: &str);
-}
-
-#[wasm_bindgen]
-pub fn hello(name: &str) {
-    let greet = format!("hello, {}", name);
-    console_log(&greet);
+pub fn hello(name: &str) -> String {
+    format!("hello, {}", name)
 }
 
 #[cfg(test)]
