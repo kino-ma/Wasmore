@@ -1,21 +1,20 @@
 name: Run Test with Makefile
 
 on:
-  push:
-    branches: [ '*' ]
-  pull_request:
-    branches: [ '*' ]
+    push:
+        branches: [main, develop]
+    pull_request:
+        branches: ["*"]
 
 jobs:
-  build:
+    build:
+        runs-on: ubuntu-latest
 
-    runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
 
-    steps:
-    - uses: actions/checkout@v2
-      
-    - name: Run check
-      run: make check
-      
-    - name: Run tests
-      run: make test
+            - name: Run check
+              run: make check
+
+            - name: Run tests
+              run: make test
