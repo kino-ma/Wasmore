@@ -1,9 +1,12 @@
 default: run
 
-.PHONY: default run test test-js test-rs check check-rs check-js
+.PHONY: default run install test test-js test-rs check check-rs check-js
 
 run: faas-app/pkg/faas_app.js
 	yarn run start
+
+install: package.json
+	yarn
 
 faas-app/pkg/faas_app.js: faas-app/src/lib.rs
 	cd faas-app && wasm-pack build --target nodejs
