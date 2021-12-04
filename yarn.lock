@@ -302,6 +302,9 @@ express@~4.16.1:
     utils-merge "1.0.1"
     vary "~1.1.2"
 
+faas-app@./faas-app/pkg/:
+  version "0.1.0"
+
 finalhandler@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/finalhandler/-/finalhandler-1.1.1.tgz#eebf4ed840079c83f4249038c9d703008301b105"
