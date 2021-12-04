@@ -1,3 +1,4 @@
+WASM_BIND := faas-app/pkg/faas_app.js
 default: run
 
 .PHONY: default run install test test-js test-rs check check-rs check-js
@@ -5,10 +6,12 @@ default: run
 run: faas-app/pkg/faas_app.js
 	yarn run start
 
-install: package.json faas-app/pkg/faas_app.js
+install: package.json
+	cargo install wasm-pack
+	$(MAKE) $(WASM_BIND)
 	yarn
 
-faas-app/pkg/faas_app.js: faas-app/src/lib.rs
+$(WASM_BIND): faas-app/src/lib.rs
 	cd faas-app && wasm-pack build --target nodejs
 
 test: test-js test-rs
