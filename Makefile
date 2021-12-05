@@ -12,6 +12,7 @@ install: package.json
 		|| PATH=/usr/bin:$$PATH cargo install wasm-pack --git https://github.com/rustwasm/wasm-pack --rev c9ea9aebbccf5029846a24a6a823b18bb41736c7
 	$(MAKE) $(WASM_BIND)
 	yarn
+	@echo OK
 
 $(WASM_BIND): faas-app/src/lib.rs
 	cd faas-app && wasm-pack build --target nodejs
