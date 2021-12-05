@@ -7,7 +7,9 @@ run: faas-app/pkg/faas_app.js
 	yarn run start
 
 install: package.json
-	cargo install wasm-pack
+	[[ $$(uname) != "Darwin" ]] \
+		&& cargo install \
+		|| PATH=/usr/bin:$$PATH cargo install wasm-pack --git https://github.com/rustwasm/wasm-pack --rev c9ea9aebbccf5029846a24a6a823b18bb41736c7
 	$(MAKE) $(WASM_BIND)
 	yarn
 
