@@ -7,7 +7,11 @@ pub fn hello(name: &str) -> String {
 
 #[wasm_bindgen]
 pub fn heavy_task(input: isize) -> isize {
-    input.pow(2)
+    let mut sum = 0;
+    for _ in 1..=input {
+        sum += input;
+    }
+    sum
 }
 
 #[wasm_bindgen]
