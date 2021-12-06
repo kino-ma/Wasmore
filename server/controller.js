@@ -1,12 +1,23 @@
 const express = require('express');
 const app = express();
 
+const { heavy, light, hello } = require('./invoker');
+
 const indexRouter = require('./routes/index');
-const heavyRouter = require('./routes/heavy');
-const lightRouter = require('./routes/light');
+
+const invokeTask = (task) => {
+  return async (req, res, _next) => {
+    console.log(req.body);
+    const output = task(req.body.input);
+    res.json({
+      output
+    });
+    return output;
+  }
+}
 
 app.use('/', indexRouter);
-app.use('/light-task', lightRouter);
-app.use('/heavy-task', heavyRouter);
+app.use('/light-task', invokeTask(light));
+app.use('/heavy-task', invokeTask(heavy));
 
 module.exports = app;
