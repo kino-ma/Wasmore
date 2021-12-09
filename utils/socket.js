@@ -13,14 +13,8 @@ class Request {
           data += chunk;
         })
 
-        res.on('end', () => {
-          const json = JSON.parse(data);
-          resolve(json);
-        })
-
-        res.on('error', (err) => {
-          reject(err);
-        })
+        res.on('end', () => resolve(data));
+        res.on('error', reject);
 
         console.log(`code: ${res.statusCode}`);
       })
