@@ -1,62 +1,49 @@
-/*
-**
-**  Example of Interprocess communication in Node.js through a UNIX domain socket
-**
-**  Usage:
-**   server>  MODE=server node ipc.example.js
-**   client>  MODE=client node ipc.example.js
-**
-*/
-
-const net = require('net');
-
 const http = require('http');
 
-class SocketWriter {
-  constructor(socket) {
-    this.socket = socket;
-  }
+const dockerSocket = "/var/run/docker.sock";
 
-  write(data) {
-    this.socket.write(data)
-  }
-}
+class Request {
+  constructor(options) {
+    this._promise = new Promise((resolve, reject) => {
+      const clientRequest = http.request(options, (res) => {
+        console.log("start");
+        let data = '';
 
-const connect = (socketPath) => {
-  const options = {
-    socketPath,
-    method: "GET",
-    path: "/containers/json",
-  };
+        res.on('data', (chunk) => {
+          data += chunk;
+        })
 
-  return new Promise((resolve, reject) => {
-    const clientRequest = http.request(options, (res) => {
-      console.log("start");
-      let data = '';
+        res.on('end', () => {
+          const json = JSON.parse(data);
+          resolve(json);
+        })
 
-      res.on('data', (chunk) => {
-        data += chunk;
+        res.on('error', (err) => {
+          reject(err);
+        })
+
+        console.log(`code: ${res.statusCode}`);
       })
-
-      res.on('end', () => {
-        const json = JSON.parse(data);
-        resolve(json);
-      })
-
-      res.on('error', (err) => {
-        reject(err);
-      })
-
-      console.log(`code: ${res.statusCode}`);
+      clientRequest.end();
     })
+  }
 
-    clientRequest.end();
-  })
+  static get(path, socketPath = dockerSocket) {
+    const options = {
+      method: "GET",
+      path,
+      socketPath,
+    };
+    const clientRequest = new Request(options);
+
+    return clientRequest._promise;
+  }
 }
 
 module.exports = {
-  SocketWriter,
-  connect,
+  Request
 }
 
-connect("/var/run/docker.sock").then(console.log).catch(console.error);
+Request.get("/containers/json")
+  .then(console.log)
+  .catch(console.error);
