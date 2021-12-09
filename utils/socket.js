@@ -23,52 +23,34 @@ class SocketWriter {
 }
 
 const connect = (socketPath) => {
-
-  const clientRequest = http.request({
+  const options = {
     socketPath,
     method: "GET",
     path: "/containers/json",
-  }, (res) => {
-    console.log("start");
-    let data = '';
-    res.on('data', (chunk) => {
-      data += chunk;
-    })
-    res.on('end', () => {
-      const json = JSON.parse(data);
-      console.log({ json });
-    })
-    console.log(`code: ${res.statusCode}`);
-  })
-
-  clientRequest.end();
-  return;
+  };
 
   return new Promise((resolve, reject) => {
-    const client = net.createConnection(socketFile)
-      .on('connect', () => {
-        console.log("socket connected.");
-      })
-      // Messages are buffers. use toString
-      .on('data', function (data) {
-        data = data.toString();
+    const clientRequest = http.request(options, (res) => {
+      console.log("start");
+      let data = '';
 
-        if (data === '__boop') {
-          console.info('Server sent boop. Confirming our snoot is booped.');
-          client.write('__snootbooped');
-          return;
-        }
-        if (data === '__disconnect') {
-          console.log('Server disconnected.')
-          return cleanup();
-        }
-
-        // Generic message handler
-        resolve(data);
+      res.on('data', (chunk) => {
+        data += chunk;
       })
-      .on('error', function (data) {
-        reject(data)
-      });
+
+      res.on('end', () => {
+        const json = JSON.parse(data);
+        resolve(json);
+      })
+
+      res.on('error', (err) => {
+        reject(err);
+      })
+
+      console.log(`code: ${res.statusCode}`);
+    })
+
+    clientRequest.end();
   })
 }
 
@@ -77,4 +59,4 @@ module.exports = {
   connect,
 }
 
-connect("/var/run/docker.sock");
+connect("/var/run/docker.sock").then(console.log).catch(console.error);
