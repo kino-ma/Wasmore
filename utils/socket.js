@@ -10,6 +10,8 @@
 
 const net = require('net');
 
+const http = require('http');
+
 class SocketWriter {
   constructor(socket) {
     this.socket = socket;
@@ -20,7 +22,28 @@ class SocketWriter {
   }
 }
 
-const connect = (socketFile) => {
+const connect = (socketPath) => {
+
+  const clientRequest = http.request({
+    socketPath,
+    method: "GET",
+    path: "/containers/json",
+  }, (res) => {
+    console.log("start");
+    let data = '';
+    res.on('data', (chunk) => {
+      data += chunk;
+    })
+    res.on('end', () => {
+      const json = JSON.parse(data);
+      console.log({ json });
+    })
+    console.log(`code: ${res.statusCode}`);
+  })
+
+  clientRequest.end();
+  return;
+
   return new Promise((resolve, reject) => {
     const client = net.createConnection(socketFile)
       .on('connect', () => {
@@ -53,3 +76,5 @@ module.exports = {
   SocketWriter,
   connect,
 }
+
+connect("/var/run/docker.sock");
