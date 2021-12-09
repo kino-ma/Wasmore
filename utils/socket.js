@@ -43,7 +43,3 @@ class Request {
 module.exports = {
   Request
 }
-
-Request.get("/containers/json")
-  .then(console.log)
-  .catch(console.error);
