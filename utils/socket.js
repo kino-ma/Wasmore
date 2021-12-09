@@ -3,7 +3,7 @@ const http = require('http');
 const dockerSocket = "/var/run/docker.sock";
 
 class Request {
-  constructor(options) {
+  constructor(options, body = null) {
     this._promise = new Promise((resolve, reject) => {
       const clientRequest = http.request(options, (res) => {
         console.log("start");
@@ -18,6 +18,11 @@ class Request {
 
         console.log(`code: ${res.statusCode}`);
       })
+
+      if (body && typeof body === "string") {
+        clientRequest.write(body);
+      }
+
       clientRequest.end();
     })
   }
@@ -29,6 +34,18 @@ class Request {
       socketPath,
     };
     const clientRequest = new Request(options);
+
+    return clientRequest._promise;
+  }
+
+  static post(path, body, option = {}, socketPath = dockerSocket) {
+    const options = {
+      method: "POST",
+      path,
+      socketPath,
+      ...option,
+    };
+    const clientRequest = new Request(options, body = body);
 
     return clientRequest._promise;
   }
