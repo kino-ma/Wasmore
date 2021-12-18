@@ -31,8 +31,8 @@ const dateRunner = docker
     AttachStdout: true,
   })
   .catch((err) => {
-    console.error("could not creat container: ", err);
-    process.exit(1);
+    console.debug(`could not creat container: '${err}'. use existing one instead.`);
+    return docker.getContainer(containers.date);
   });
 
 const callContainer = () => {

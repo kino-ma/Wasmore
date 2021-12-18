@@ -55,25 +55,4 @@ process.on("exit", () => {
   console.log({ count });
 });
 
-[
-  `exit`,
-  `SIGINT`,
-  `SIGUSR1`,
-  `SIGUSR2`,
-  `uncaughtException`,
-  `SIGTERM`,
-].forEach((eventType) => {
-  process.on(eventType, async () => {
-    await removeContainers();
-    console.debug("removed");
-    process.exit(0);
-  });
-});
-
-// process.on("SIGINT", async () => {
-//   await removeContainers();
-//   console.debug("removed");
-//   process.exit();
-// });
-
 module.exports = app;
