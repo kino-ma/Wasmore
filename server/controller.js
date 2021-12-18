@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 
-const { heavy, light, container } = require('./invoker');
+const { heavy, light, container, date } = require('./invoker');
 
 const indexRouter = require('./routes/index');
 
@@ -20,5 +20,6 @@ app.use('/', indexRouter);
 app.use('/light-task', invokeTask(light));
 app.use('/heavy-task', invokeTask(heavy));
 app.use('/container', invokeTask(container));
+app.use('/date', invokeTask(date));
 
 module.exports = app;
