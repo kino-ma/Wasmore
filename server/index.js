@@ -1,11 +1,16 @@
-const createError = require('http-errors');
-const express = require('express');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
+const createError = require("http-errors");
+const express = require("express");
+const path = require("path");
+const cookieParser = require("cookie-parser");
+const logger = require("morgan");
 
-const controller = require('./controller');
-const { docker, containers, dateRunner } = require("../utils/container");
+const controller = require("./controller");
+const {
+  docker,
+  containers,
+  dateRunner,
+  removeContainers,
+} = require("../utils/container");
 
 const app = express();
 
@@ -37,18 +42,38 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
-process.on("SIGINT", async () => {
-  dateRunner
-    .then((container) => {
-      return container.remove();
-    })
-    .then((_) => {
-      console.log("removed");
-      process.exit();
-    })
-    .catch((err) => {
-      console.error("could not remove container:", err);
-    });
+process.on("exit", () => {
+  let done = false;
+  let count = 0;
+
+  removeContainers().then(() => (done = true));
+
+  while (!done) {
+    count += 1;
+  }
+
+  console.log({ count });
 });
+
+[
+  `exit`,
+  `SIGINT`,
+  `SIGUSR1`,
+  `SIGUSR2`,
+  `uncaughtException`,
+  `SIGTERM`,
+].forEach((eventType) => {
+  process.on(eventType, async () => {
+    await removeContainers();
+    console.debug("removed");
+    process.exit(0);
+  });
+});
+
+// process.on("SIGINT", async () => {
+//   await removeContainers();
+//   console.debug("removed");
+//   process.exit();
+// });
 
 module.exports = app;
