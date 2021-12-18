@@ -1,3 +1,4 @@
+const streams = require("memory-streams");
 const { hello, heavy_task, light_task } = require("../faas-app/pkg/faas_app");
 const { callContainer, dateRunner } = require("../utils/container");
 
@@ -15,27 +16,41 @@ const container = (input) => {
         console.error(err);
       }
     });
-}
+};
 
 const date = (_input) => {
-  console.log({ dateRunner })
+  console.log({ dateRunner });
+  const stdout = new streams.WritableStream();
   return dateRunner
-    .then(([data, container]) => {
-      console.log({ containerId: container.id });
-      console.log({ statusCode: data.StatusCode });
-      return data;
+    .then((container) => {
+      console.log({ container });
+
+      container
+        .attach({ stream: true, stdout: true, stderr: true })
+        .then((stream) => {
+          stream.pipe(stdout);
+        });
+
+      return container.start();
+    })
+    .then((res) => {
+      console.log({ collResult: res });
+      const decoded = stdout.toString();
+      console.log({ decoded });
+
+      return decoded;
     })
     .catch((err) => {
       if (err) {
         console.error(err);
       }
     });
-}
+};
 
 module.exports = {
   heavy,
   light,
   container,
   date,
-  hello
+  hello,
 };
