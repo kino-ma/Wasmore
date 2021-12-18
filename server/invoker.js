@@ -7,8 +7,6 @@ const light = (input) => light_task(input);
 const container = (input) => {
   return callContainer(input)
     .then(([data, container]) => {
-      console.log({ containerId: container.id });
-      console.log({ statusCode: data.StatusCode });
       return data;
     })
     .catch((err) => {
@@ -34,9 +32,9 @@ const date = (_input) => {
       return container.start();
     })
     .then((res) => {
-      console.log({ collResult: res });
+      console.debug({ collResult: res });
       const decoded = stdout.toString();
-      console.log({ decoded });
+      console.debug({ decoded });
 
       return decoded;
     })
