@@ -36,7 +36,12 @@ const date = (_input) => {
       const decoded = stdout.toString();
       console.debug({ decoded });
 
-      return decoded;
+      const output = {
+        stdout: decoded,
+        callResult: res
+      };
+
+      return output;
     })
     .catch((err) => {
       if (err) {

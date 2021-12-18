@@ -10,7 +10,7 @@ const invokeTask = (task) => {
     console.log(req.body);
     const output = await task(req.body.input);
     res.json({
-      output
+      output: output.stdout ?? output
     });
     return output;
   }
