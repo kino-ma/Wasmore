@@ -27,7 +27,6 @@ const dateRunner = docker
   .createContainer({
     Image: "ubuntu",
     Cmd: ["date"],
-    name: containers.date,
     AttachStdout: true,
   })
   .catch((err) => {
