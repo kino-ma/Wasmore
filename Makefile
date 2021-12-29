@@ -1,7 +1,7 @@
 WASM_BIND := faas-app/pkg/faas_app.js
 default: run
 
-.PHONY: default run install test test-js test-rs check check-rs check-js
+.PHONY: default run install test test-js test-rs check check-rs check-js clean-container
 
 run: faas-app/pkg/faas_app.js
 	yarn run start
@@ -12,6 +12,7 @@ install: package.json
 		|| PATH=/usr/bin:$$PATH cargo install wasm-pack --git https://github.com/rustwasm/wasm-pack --rev c9ea9aebbccf5029846a24a6a823b18bb41736c7
 	$(MAKE) $(WASM_BIND)
 	yarn
+	docker pull ubuntu:latest
 	@echo OK
 
 $(WASM_BIND): faas-app/src/lib.rs
@@ -22,6 +23,7 @@ test: test-js test-rs
 
 test-js:
 	yarn test
+	$(MAKE) clean-container
 
 test-rs:
 	cd faas-app && cargo test
@@ -39,3 +41,6 @@ check-js:
 		-not -path './node_modules/*' \
 		-not -path './faas-app/pkg/*' \
 		-exec node --check {} \;
+
+clean-container:
+	docker ps -a | grep ubuntu | grep 'date' | awk '{print $$1}' | xargs docker rm
