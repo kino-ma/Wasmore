@@ -6,6 +6,6 @@ describe("Test Invoker", () => {
     const { stdout, callResult } = output;
     console.debug({ output })
     expect(callResult).not.toBeFalsy();
-    expect(stdout).not.toBeFalsy();
+    expect(stdout).not.toBe(undefined);
   });
 });
