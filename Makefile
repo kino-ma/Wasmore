@@ -12,7 +12,9 @@ default: run
 run: faas-app/pkg/faas_app.js
 	yarn run start
 
-install: package.json rust-container
+install: package.json
+	docker container create -it --name $(DOCKER_RUST_NAME) --volume "$$PWD/faas-app:/app" --workdir '/app' rust:latest bash
+	$(MAKE) rust-container
 	$(CARGO) install wasm-pack
 	$(MAKE) $(WASM_BIND)
 	yarn
@@ -20,10 +22,9 @@ install: package.json rust-container
 	@echo OK
 
 rust-container:
-	docker container create -it --name $(DOCKER_RUST_NAME) --volume "$$PWD/faas-app:/app" --workdir '/app' rust:latest bash
 	docker start $(DOCKER_RUST_NAME)
 
-$(WASM_BIND): faas-app/src/lib.rs
+$(WASM_BIND): faas-app/src/lib.rs rust-container
 	$(DOCKER_RUST_EXEC) wasm-pack build --target nodejs
 
 test: test-js test-rs
@@ -33,13 +34,13 @@ test-js:
 	yarn test
 	$(MAKE) clean-container
 
-test-rs:
+test-rs: rust-container
 	$(CARGO) test
 
 check: check-rs check-js
 	@echo OK
 
-check-rs:
+check-rs: rust-container
 	$(CARGO) check
 
 check-js:
