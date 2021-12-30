@@ -1,6 +1,62 @@
 const Docker = require('dockerode');
+const streams = require("memory-streams");
+
 const dockerSocket = "/var/run/docker.sock";
 const docker = new Docker(dockerSocket);
+
+class Container {
+  constructor(options) {
+    this._stdout = new streams.WritableStream();
+
+    this.container = docker
+      .createContainer(options)
+      .then((container) => {
+        console.log({ container });
+
+        container
+          .attach({ stream: true, stdout: true, stderr: true })
+          .then((stream) => {
+            stream.pipe(this._stdout);
+            // stream.pipe(process.stderr);
+          });
+
+        return container;
+      })
+  }
+
+  async run() {
+    const container = await this.container;
+    await container.start();
+    const callResult = await container.wait();
+
+    const wait = (timeout) => {
+      // process.stderr.write("wait start")
+      console.log("wait start", Date.now())
+      return new Promise((resolve, _reject) => {
+        setTimeout(() => {
+          console.log("wait end", Date.now())
+          // process.stderr.write("wait end")
+          resolve()
+        }, timeout);
+      })
+    }
+
+    // await wait(1000);
+
+    // const finished = await new Promise((resolve, _reject) => {
+    //   this._stdout.on('end', resolve);
+    // })
+
+    const stdout = this._stdout.toString();
+    const output = {
+      stdout,
+      callResult
+    };
+
+    console.log({ stdout });
+    return output;
+  }
+}
 
 const containers = {
   date: "date-runner",
@@ -26,18 +82,16 @@ const removeContainers = () => {
 const dateRunner = docker
   .createContainer({
     Image: "ubuntu",
-    Cmd: ["date"],
+    Cmd: ["date", "+%s"],
     AttachStdout: true,
   })
-  .catch((err) => {
-    console.debug(`could not creat container: '${err}'. use existing one instead.`);
-    return docker.getContainer(containers.date);
-  });
 
 const callContainer = () => {
-  return docker.run("ubuntu", ["date"], process.stdout, { AutoRemove: true });
+  return docker.run("ubuntu", ["date", "+%s"], process.stdout, { AutoRemove: true });
 };
 
 console.debug({ dateRunner });
 
-module.exports = { docker, callContainer, dateRunner, removeContainers };
+console.debug({ started: dateRunner })
+
+module.exports = { Container, docker, callContainer, dateRunner, removeContainers };
