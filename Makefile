@@ -1,22 +1,30 @@
+SHELL := /bin/bash
 WASM_BIND := faas-app/pkg/faas_app.js
+DOCKER_RUST_NAME := faas-app-rust
+DOCKER_RUST_EXEC := docker exec -it faas-app-rust
+CARGO := $(DOCKER_RUST_EXEC) cargo
+UNAME := $(shell uname)
+
 default: run
 
-.PHONY: default run install test test-js test-rs check check-rs check-js clean-container
+.PHONY: default run install test test-js test-rs check check-rs check-js rust-container clean-container
 
 run: faas-app/pkg/faas_app.js
 	yarn run start
 
-install: package.json
-	[[ $$(uname) != "Darwin" ]] \
-		&& cargo install \
-		|| PATH=/usr/bin:$$PATH cargo install wasm-pack --git https://github.com/rustwasm/wasm-pack --rev c9ea9aebbccf5029846a24a6a823b18bb41736c7
+install: package.json rust-container
+	$(CARGO) install wasm-pack
 	$(MAKE) $(WASM_BIND)
 	yarn
 	docker pull ubuntu:latest
 	@echo OK
 
+rust-container:
+	docker container create -it --name $(DOCKER_RUST_NAME) --volume "$$PWD/faas-app:/app" --workdir '/app' rust:latest bash
+	docker start $(DOCKER_RUST_NAME)
+
 $(WASM_BIND): faas-app/src/lib.rs
-	cd faas-app && wasm-pack build --target nodejs
+	$(DOCKER_RUST_EXEC) wasm-pack build --target nodejs
 
 test: test-js test-rs
 	@echo OK
@@ -26,13 +34,13 @@ test-js:
 	$(MAKE) clean-container
 
 test-rs:
-	cd faas-app && cargo test
+	$(CARGO) test
 
 check: check-rs check-js
 	@echo OK
 
 check-rs:
-	cd faas-app && cargo check
+	$(CARGO) check
 
 check-js:
 	find . \
