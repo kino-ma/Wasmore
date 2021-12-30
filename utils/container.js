@@ -13,11 +13,11 @@ class Container {
       .then((container) => {
         console.log({ container });
 
+        // To get stdout in memory stream
         container
           .attach({ stream: true, stdout: true, stderr: true })
           .then((stream) => {
             stream.pipe(this._stdout);
-            // stream.pipe(process.stderr);
           });
 
         return container;
@@ -29,31 +29,12 @@ class Container {
     await container.start();
     const callResult = await container.wait();
 
-    const wait = (timeout) => {
-      // process.stderr.write("wait start")
-      console.log("wait start", Date.now())
-      return new Promise((resolve, _reject) => {
-        setTimeout(() => {
-          console.log("wait end", Date.now())
-          // process.stderr.write("wait end")
-          resolve()
-        }, timeout);
-      })
-    }
-
-    // await wait(1000);
-
-    // const finished = await new Promise((resolve, _reject) => {
-    //   this._stdout.on('end', resolve);
-    // })
-
     const stdout = this._stdout.toString();
     const output = {
       stdout,
       callResult
     };
 
-    console.log({ stdout });
     return output;
   }
 }
