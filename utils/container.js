@@ -11,8 +11,6 @@ class Container {
     this.container = docker
       .createContainer(options)
       .then((container) => {
-        console.log({ container });
-
         // To get stdout in memory stream
         container
           .attach({ stream: true, stdout: true, stderr: true })
@@ -60,19 +58,14 @@ const removeContainers = () => {
   return Promise.all(promises);
 };
 
-const dateRunner = docker
-  .createContainer({
-    Image: "ubuntu",
-    Cmd: ["date", "+%s"],
-    AttachStdout: true,
-  })
+const dateRunner = new Container({
+  Image: "ubuntu",
+  Cmd: ["date", "+%s"],
+  AttachStdout: true,
+})
 
 const callContainer = () => {
   return docker.run("ubuntu", ["date", "+%s"], process.stdout, { AutoRemove: true });
 };
-
-console.debug({ dateRunner });
-
-console.debug({ started: dateRunner })
 
 module.exports = { Container, docker, callContainer, dateRunner, removeContainers };

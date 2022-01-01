@@ -7,7 +7,7 @@ describe("Test the container utility", () => {
   });
 
   test("start container", async () => {
-    const container = await dateRunner;
+    const container = dateRunner;
     const { stdout } = await container.run();
     expect(stdout).not.toBeFalsy()
   });
