@@ -1,18 +1,12 @@
 const { Container, callContainer, dateRunner } = require("./container");
 
 describe("Test the container utility", () => {
-  test("Run `date` on ubuntu", async () => {
+  test("It can use Docker API", async () => {
     const [output, _container] = await callContainer();
     expect(output.StatusCode).toBe(0);
   });
 
-  test("start container", async () => {
-    const container = dateRunner;
-    const { stdout } = await container.run();
-    expect(stdout).not.toBeFalsy()
-  });
-
-  test("use Container class", async () => {
+  test("`Container` class works ok", async () => {
     const container = new Container({
       Image: "ubuntu",
       Cmd: ["date", "+%s"],
@@ -24,7 +18,13 @@ describe("Test the container utility", () => {
     expect(stdout).not.toBeFalsy()
   })
 
-  test("exec on running Container", async () => {
+  test("It can start container with wrapper function", async () => {
+    const container = dateRunner;
+    const { stdout } = await container.run();
+    expect(stdout).not.toBeFalsy()
+  });
+
+  test("It can run `exec` on a running Container", async () => {
     const container = new Container({
       Image: "ubuntu",
       Cmd: ["sleep", "1"],
