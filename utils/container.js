@@ -15,7 +15,7 @@ class Container {
       .then((container) => {
         // To get stdout in memory stream
         container
-          .attach({ stream: true, stdout: true, stderr: true })
+          .attach({ stream: true, stdout: true, stderr: true, stream: true })
           .then((stream) => {
             stream.pipe(this._stdout);
           });
@@ -26,13 +26,36 @@ class Container {
 
   async run(wait = true) {
     const container = await this.container;
-    await container.start();
+    // const stream = await container.start({ options: { isStream: true } });
+    const stream = await container.start();
 
     if (!wait) {
       return;
     }
 
+    // const closedStdout = new Promise((resolve, reject) => {
+    // console.log({ stream: stream.toString("utf-8") });
+    // stream.on('close', () => {
+    //   const stdout = this._stdout.toString();
+    //   resolve(stdout);
+    // })
+
+    // stream.on('finish', () => {
+    //   const stdout = this._stdout.toString();
+    //   resolve(stdout);
+    // })
+
+    // stream.on('unpipe', () => {
+    //   const stdout = this._stdout.toString();
+    //   resolve(stdout);
+    // })
+
+    // stream.on('error', reject);
+    // })
+
     const callResult = await container.wait();
+    console.log({ callRseult: callResult });
+    console.log({ stream: [...stream] });
 
     const stdout = this._stdout.toString();
     const output = {
@@ -77,6 +100,7 @@ class CachingContainer {
       Image: "ubuntu",
       Cmd: ["date", "+%s"],
       AttachStdout: true,
+      AttachStderr: true,
     })
   }
 }
@@ -106,6 +130,7 @@ const dateRunner = new Container({
   Image: "ubuntu",
   Cmd: ["date", "+%s"],
   AttachStdout: true,
+  Tty: true,
 })
 
 const callContainer = () => {

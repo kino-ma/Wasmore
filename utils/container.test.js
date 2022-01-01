@@ -34,7 +34,6 @@ describe("Test the container utility", () => {
     await container.run(wait = false);
     const output = await container.exec(["bash", "-c", "uname -a && sleep 0.1 && echo next"]);
 
-    console.debug({ output })
     expect(output).not.toBeFalsy();
   })
 });
