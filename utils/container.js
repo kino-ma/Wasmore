@@ -24,6 +24,11 @@ class Container {
     return container.start();
   }
 
+  async start() {
+    const container = await this.container;
+    return container.start();
+  }
+
   async run(wait = true) {
     await this.startAttaching();
 
@@ -68,7 +73,7 @@ class CachingContainer extends Container {
   constructor(command, customOptions = {}) {
     const defaultOptions = {
       Image: "ubuntu",
-      Cmd: ["bash"],
+      Cmd: ["sleep", "300"],
       AttachStdout: true,
       AttachStderr: true,
       Tty: true,
@@ -93,7 +98,7 @@ class CachingContainer extends Container {
 
     if (!this.running) {
       this.running = true;
-      return super.startAttaching();
+      return super.start();
     }
   }
 
