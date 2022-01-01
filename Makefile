@@ -30,7 +30,7 @@ $(WASM_BIND): faas-app/src/lib.rs rust-container
 test: test-js test-rs
 	@echo OK
 
-test-js:
+test-js: clean-container
 	yarn test
 	$(MAKE) clean-container
 
@@ -51,5 +51,6 @@ check-js:
 		-not -path './faas-app/pkg/*' \
 		-exec node --check {} \;
 
+# ignore errors
 clean-container:
-	docker ps -a | grep ubuntu | grep 'date' | awk '{print $$1}' | xargs docker rm
+	-docker ps -a | grep ubuntu | grep -E 'date|sleep' | awk '{print $$1}' | xargs docker rm
