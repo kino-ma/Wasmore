@@ -26,41 +26,16 @@ class Container {
 
   async run(wait = true) {
     const container = await this.container;
-    // const stream = await container.start({ options: { isStream: true } });
-    const stream = await container.start();
+    await container.start();
 
     if (!wait) {
       return;
     }
 
-    // const closedStdout = new Promise((resolve, reject) => {
-    // console.log({ stream: stream.toString("utf-8") });
-    // stream.on('close', () => {
-    //   const stdout = this._stdout.toString();
-    //   resolve(stdout);
-    // })
-
-    // stream.on('finish', () => {
-    //   const stdout = this._stdout.toString();
-    //   resolve(stdout);
-    // })
-
-    // stream.on('unpipe', () => {
-    //   const stdout = this._stdout.toString();
-    //   resolve(stdout);
-    // })
-
-    // stream.on('error', reject);
-    // })
-
-    const callResult = await container.wait();
-    console.log({ callRseult: callResult });
-    console.log({ stream: [...stream] });
-
+    // await container.wait();
     const stdout = this._stdout.toString();
     const output = {
       stdout,
-      callResult
     };
 
     return output;
