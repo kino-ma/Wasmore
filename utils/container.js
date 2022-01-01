@@ -84,23 +84,6 @@ const containers = {
   date: "date-runner",
 };
 
-const removeContainers = () => {
-  const containers = [dateRunner];
-  const promises = containers.map((c) => {
-    c.then((container) => {
-      return container.remove();
-    })
-      .then((_) => {
-        console.log("removed");
-      })
-      .catch((err) => {
-        console.error("could not remove container:", err);
-      });
-  });
-
-  return Promise.all(promises);
-};
-
 const dateRunner = new Container({
   Image: "ubuntu",
   Cmd: ["date", "+%s"],

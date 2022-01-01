@@ -42,17 +42,4 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
-process.on("exit", () => {
-  let done = false;
-  let count = 0;
-
-  removeContainers().then(() => (done = true));
-
-  while (!done) {
-    count += 1;
-  }
-
-  console.log({ count });
-});
-
 module.exports = app;
