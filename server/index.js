@@ -5,12 +5,6 @@ const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 
 const controller = require("./controller");
-const {
-  docker,
-  containers,
-  dateRunner,
-  removeContainers,
-} = require("../utils/container");
 
 const app = express();
 

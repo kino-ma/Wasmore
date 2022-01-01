@@ -95,4 +95,4 @@ const callContainer = () => {
   return docker.run("ubuntu", ["date", "+%s"], process.stdout, { AutoRemove: true });
 };
 
-module.exports = { Container, docker, callContainer, dateRunner, removeContainers };
+module.exports = { Container, docker, callContainer, dateRunner };
