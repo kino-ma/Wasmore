@@ -8,8 +8,8 @@ describe("Test the container utility", () => {
 
   test("start container", async () => {
     const container = await dateRunner;
-    const started = await container.start();
-    console.debug({ started: started.toString() });
+    const { stdout } = await container.run();
+    expect(stdout).not.toBeFalsy()
   });
 
   test("use Container class without", async () => {
