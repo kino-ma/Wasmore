@@ -1,4 +1,4 @@
-const { Container, callContainer, dateRunner } = require("./container");
+const { Container, CachingContainer, callContainer, dateRunner } = require("./container");
 
 describe("Test the container utility", () => {
   test("It can use Docker API", async () => {
@@ -34,6 +34,16 @@ describe("Test the container utility", () => {
     await container.run(wait = false);
     const output = await container.exec(["bash", "-c", "uname -a && sleep 0.1 && echo next"]);
 
+    expect(output).not.toBeFalsy();
+  })
+
+  test("`CachingContainer` workes well", async () => {
+    const container = new CachingContainer([
+      "bash",
+      "-c",
+      "uname -a && sleep 0.1 && echo done"
+    ]);
+    const output = await container.startAndExec();
     expect(output).not.toBeFalsy();
   })
 });

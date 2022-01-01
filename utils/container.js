@@ -12,25 +12,20 @@ class Container {
 
     this.container = docker
       .createContainer(options)
-      .then((container) => {
-        // To get stdout in memory stream
-        container
-          .attach({ stream: true, stdout: true, stderr: true, stream: true })
-          .then((stream) => {
-            stream.pipe(this._stdout);
-          });
+  }
 
-        return container;
-      })
+  async startAttaching() {
+    const container = await this.container;
+    container
+      .attach({ stream: true, stdout: true, stderr: true, stream: true })
+      .then((stream) => {
+        stream.pipe(this._stdout);
+      });
+    return container.start();
   }
 
   async run(wait = true) {
-    const container = await this.container;
-    await container.start();
-
-    if (!wait) {
-      return;
-    }
+    await this.startAttaching();
 
     // await container.wait();
     const stdout = this._stdout.toString();
@@ -69,14 +64,45 @@ class Container {
   }
 }
 
-class CachingContainer {
-  constructor(command) {
-    const container = new Container({
+class CachingContainer extends Container {
+  constructor(command, customOptions = {}) {
+    const defaultOptions = {
       Image: "ubuntu",
-      Cmd: ["date", "+%s"],
+      Cmd: ["bash"],
       AttachStdout: true,
       AttachStderr: true,
-    })
+      Tty: true,
+    };
+
+    const startOptions = {
+      ...defaultOptions,
+      ...customOptions
+    }
+
+    super(startOptions);
+
+    this.startOptions = startOptions;
+    this.running = false;
+    this.command = command;
+  }
+
+  async manualStart() {
+    if (this.container === null) {
+      this.container = new Container(this.startOptions);
+    }
+
+    if (!this.running) {
+      this.running = true;
+      return super.startAttaching();
+    }
+  }
+
+  async startAndExec() {
+    if (!this.running) {
+      await this.manualStart();
+    }
+
+    return this.exec(this.command);
   }
 }
 
@@ -95,4 +121,4 @@ const callContainer = () => {
   return docker.run("ubuntu", ["date", "+%s"], process.stdout, { AutoRemove: true });
 };
 
-module.exports = { Container, docker, callContainer, dateRunner };
+module.exports = { Container, CachingContainer, docker, callContainer, dateRunner };
