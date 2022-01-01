@@ -12,7 +12,7 @@ describe("Test the container utility", () => {
     expect(stdout).not.toBeFalsy()
   });
 
-  test("use Container class without", async () => {
+  test("use Container class", async () => {
     const container = new Container({
       Image: "ubuntu",
       Cmd: ["date", "+%s"],
@@ -22,5 +22,19 @@ describe("Test the container utility", () => {
     const { stdout } = await container.run();
 
     expect(stdout).not.toBeFalsy()
+  })
+
+  test("exec on running Container", async () => {
+    const container = new Container({
+      Image: "ubuntu",
+      Cmd: ["sleep", "1"],
+      AttachStdout: true,
+    });
+
+    await container.run(wait = false);
+    const output = await container.exec(["bash", "-c", "uname -a && sleep 0.1 && echo next"]);
+
+    console.debug({ output })
+    expect(output).not.toBeFalsy();
   })
 });

@@ -1,6 +1,8 @@
 const Docker = require('dockerode');
 const streams = require("memory-streams");
 
+const wait = require("./wait");
+
 const dockerSocket = "/var/run/docker.sock";
 const docker = new Docker(dockerSocket);
 
@@ -22,9 +24,14 @@ class Container {
       })
   }
 
-  async run() {
+  async run(wait = true) {
     const container = await this.container;
     await container.start();
+
+    if (!wait) {
+      return;
+    }
+
     const callResult = await container.wait();
 
     const stdout = this._stdout.toString();
@@ -34,6 +41,46 @@ class Container {
     };
 
     return output;
+  }
+
+  async exec(command) {
+    const stdout = new streams.WritableStream();
+
+    const options = {
+      Cmd: command,
+      AttachStdout: true,
+      AttachStderr: true,
+      Tty: true,
+    };
+
+    const container = await this.container;
+    const exe = await container.exec(options);
+    const stream = await exe.start();
+    stream.pipe(stdout);
+
+    stream.on('unpipe', (src) => {
+      console.debug('unpipe', { src: src.toString() })
+    })
+
+    stream.on('close', () => {
+      console.debug('close', { src: stdout.toString() })
+    })
+
+    stream.on('finish', () => {
+      console.debug('finish', { src: stdout.toString() })
+    })
+
+    return stdout.toString();
+  }
+}
+
+class CachingContainer {
+  constructor(command) {
+    const container = new Container({
+      Image: "ubuntu",
+      Cmd: ["date", "+%s"],
+      AttachStdout: true,
+    })
   }
 }
 
