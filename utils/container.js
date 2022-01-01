@@ -58,19 +58,16 @@ class Container {
     const stream = await exe.start();
     stream.pipe(stdout);
 
-    stream.on('unpipe', (src) => {
-      console.debug('unpipe', { src: src.toString() })
+    const closedStream = new Promise((resolve, reject) => {
+      stream.on('close', () => {
+        const output = stdout.toString();
+        resolve(output)
+      })
+
+      stream.on('error', reject);
     })
 
-    stream.on('close', () => {
-      console.debug('close', { src: stdout.toString() })
-    })
-
-    stream.on('finish', () => {
-      console.debug('finish', { src: stdout.toString() })
-    })
-
-    return stdout.toString();
+    return closedStream;
   }
 }
 
