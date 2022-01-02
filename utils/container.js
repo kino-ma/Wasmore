@@ -115,12 +115,7 @@ const containers = {
   date: "date-runner",
 };
 
-const dateRunner = new Container({
-  Image: "ubuntu",
-  Cmd: ["date", "+%s"],
-  AttachStdout: true,
-  Tty: true,
-})
+const dateRunner = new CachingContainer(["date", "+%s"]);
 
 const callContainer = () => {
   return docker.run("ubuntu", ["date", "+%s"], process.stdout, { AutoRemove: true });
