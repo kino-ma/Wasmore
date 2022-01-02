@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 WASM_BIND := faas-app/pkg/faas_app.js
 DOCKER_RUST_NAME := faas-app-rust
-DOCKER_RUST_EXEC := docker exec -it faas-app-rust
+DOCKER_RUST_EXEC := docker exec -i faas-app-rust
 CARGO := $(DOCKER_RUST_EXEC) cargo
 UNAME := $(shell uname)
 
