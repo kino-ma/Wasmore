@@ -5,12 +5,6 @@ const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 
 const controller = require("./controller");
-const {
-  docker,
-  containers,
-  dateRunner,
-  removeContainers,
-} = require("../utils/container");
 
 const app = express();
 
@@ -40,19 +34,6 @@ app.use(function (err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render("error");
-});
-
-process.on("exit", () => {
-  let done = false;
-  let count = 0;
-
-  removeContainers().then(() => (done = true));
-
-  while (!done) {
-    count += 1;
-  }
-
-  console.log({ count });
 });
 
 module.exports = app;
