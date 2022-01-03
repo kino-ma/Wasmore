@@ -18,8 +18,11 @@ const container = (input) => {
 
 const date = async (_input) => {
   const container = dateRunner;
-  const { stdout } = await container.run();
-  return stdout;
+  let before = performance.now();
+  const output = await container.startAndExec();
+  let after = performance.now();
+  console.log(`startAndExec took: ${after - before} ms`);
+  return output;
 };
 
 module.exports = {

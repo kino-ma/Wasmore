@@ -52,12 +52,24 @@ class Container {
     };
 
     const container = await this.container;
+
+    let before = performance.now();
     const exe = await container.exec(options);
+    let after = performance.now();
+    console.log(`exec create took: ${after - before} ms`);
+
+    before = performance.now();
     const stream = await exe.start();
+    after = performance.now();
+    console.log(`exec start took: ${after - before} ms`);
+
     stream.pipe(stdout);
 
+    before = performance.now();
     const closedStream = new Promise((resolve, reject) => {
       stream.on('close', () => {
+        after = performance.now();
+        console.log(`stream close took: ${after - before} ms`);
         const output = stdout.toString();
         resolve(output)
       })
