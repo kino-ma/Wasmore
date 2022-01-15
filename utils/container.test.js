@@ -53,4 +53,10 @@ describe("Test the container utility", () => {
     const outputAgain = await container.startAndExec();
     expect(outputAgain).not.toBeFalsy();
   })
+
+  test("a binary can be run inside the container", async () => {
+    const container = helloContainer;
+    const output = await container.startAndExec();
+    expect(output).not.toBeFalsy();
+  })
 });
