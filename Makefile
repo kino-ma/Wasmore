@@ -12,7 +12,7 @@ else
 	CARGO := cd faas-app && cargo
 	DOCKER_RUST_CREATE := echo "cargo exists"
 	DOCKER_RUST_START := echo "using host cargo"
-	DOCKER_RUST_EXEC :=
+	DOCKER_RUST_EXEC := cd faas-app &&
 endif
 
 default: run
