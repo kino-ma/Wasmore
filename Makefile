@@ -17,16 +17,16 @@ endif
 
 default: run
 
-.PHONY: default run install wasm test test-js test-rs check check-rs check-js rust-container clean-container
+.PHONY: default run install test test-js test-rs check check-rs check-js rust-container clean-container
 
-run: faas-app/pkg/faas_app.js
+run:
 	yarn run start
 
 install: package.json
 	$(DOCKER_RUST_CREATE)
 	$(MAKE) rust-container
 	$(CARGO) install wasm-pack
-	$(MAKE) wasm
+	$(MAKE) $(WASM_BIND)
 	$(MAKE) bin
 	yarn
 	docker pull ubuntu:latest
@@ -40,8 +40,8 @@ bin:
 
 wasm: $(WASM_BIND)
 
-$(WASM_BIND): faas-app/src/lib.rs rust-container
-	$(DOCKER_RUST_EXEC) wasm-pack build
+$(WASM_BIND): faas-app/src/lib.rs
+	$(DOCKER_RUST_EXEC) wasm-pack build --target nodejs
 
 test: test-js test-rs
 	@echo OK

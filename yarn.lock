@@ -1457,7 +1457,7 @@ express@~4.16.1:
     utils-merge "1.0.1"
     vary "~1.1.2"
 
-faas-app@./faas-app/pkg/:
+faas-app@./faas-app/pkg:
   version "0.1.0"
 
 fast-json-stable-stringify@^2.0.0:
