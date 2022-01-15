@@ -46,7 +46,7 @@ bin:
 wasm: $(WASM_BIND)
 
 $(WASM_BIND): faas-app/src/lib.rs
-	$(DOCKER_RUST_EXEC) wasm-pack build --target nodejs
+	$(DOCKER_RUST_EXEC) wasm-pack build --target nodejs . --features wasm
 
 test: test-js test-rs
 	@echo OK
