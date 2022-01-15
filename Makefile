@@ -74,4 +74,4 @@ check-js:
 
 # ignore errors
 clean-container:
-	-docker ps -a | grep ubuntu | grep -E 'date|sleep' | awk '{print $$1}' | xargs docker rm -f
+	-docker ps -a | grep -E 'ubuntu|faas-bin' | grep -E 'date|sleep' | awk '{print $$1}' | xargs docker rm -f
