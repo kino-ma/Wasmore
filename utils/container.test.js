@@ -44,10 +44,10 @@ describe("Test the container utility", () => {
   test("cache also works with dateRunner", async () => {
     const container = dateRunner;
 
-    let before = performance.now();
+    // let before = performance.now();
     const output = await container.startAndExec();
-    let after = performance.now();
-    console.log(`startAndExec took: ${after - before} ms`);
+    // let after = performance.now();
+    // console.log(`startAndExec took: ${after - before} ms`);
 
     expect(output).not.toBeFalsy();
     const outputAgain = await container.startAndExec();

@@ -18,10 +18,10 @@ const container = (input) => {
 
 const date = async (_input) => {
   const container = dateRunner;
-  let before = performance.now();
+  // let before = performance.now();
   const output = await container.startAndExec();
-  let after = performance.now();
-  console.log(`startAndExec took: ${after - before} ms`);
+  // let after = performance.now();
+  // console.log(`startAndExec took: ${after - before} ms`);
   return output;
 };
 
