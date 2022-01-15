@@ -1,9 +1,4 @@
 #[cfg(feature = "wasm")]
-#[crate_type = "cdylib"]
-
-#[cfg(feature = "bin")]
-#[crate_type = "lib"]
-
 use wasm_bindgen::prelude::*;
 
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
