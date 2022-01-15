@@ -85,7 +85,7 @@ class CachingContainer extends Container {
   constructor(command, customOptions = {}) {
     const defaultOptions = {
       Image: "ubuntu",
-      Cmd: ["sleep", "300"],
+      Cmd: ["sleep", "infinity"],
       AttachStdout: true,
       AttachStderr: true,
       Tty: true,
