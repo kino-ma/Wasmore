@@ -1,5 +1,5 @@
 const streams = require("memory-streams");
-const { hello, heavy_task, light_task } = require("../faas-app/pkg/faas_app");
+const { hello, heavy_task, light_task } = require("faas-app");
 const { callContainer, dateRunner } = require("../utils/container");
 
 const heavy = (input) => heavy_task(input);
