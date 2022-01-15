@@ -26,7 +26,8 @@ install: package.json
 	$(DOCKER_RUST_CREATE)
 	$(MAKE) rust-container
 	$(CARGO) install wasm-pack
-	$(MAKE) $(WASM_BIND)
+	$(MAKE) wasm
+	$(MAKE) bin
 	yarn
 	docker pull ubuntu:latest
 	@echo OK
