@@ -1,6 +1,7 @@
 SHELL := /bin/bash
 WASM_BIND := faas-app/pkg/faas_app.js
 DOCKER_RUST_NAME := faas-app-rust
+DOCKER_BIN_NAME := faas-bin
 UNAME := $(shell uname)
 
 ifeq (, $(shell which cargo))
@@ -17,7 +18,7 @@ endif
 
 default: run
 
-.PHONY: default run install test test-js test-rs check check-rs check-js rust-container clean-container
+.PHONY: default run install test test-js test-rs check check-rs check-js rust-container bin-runner clean-container
 
 run:
 	yarn run start
@@ -30,10 +31,14 @@ install: package.json
 	$(MAKE) bin
 	yarn
 	docker pull ubuntu:latest
+	$(MAKE) bin-runner
 	@echo OK
 
 rust-container:
 	$(DOCKER_RUST_START)
+
+bin-runner: bin
+	docker build -t $(DOCKER_BIN_NAME) .
 
 bin:
 	$(CARGO) build --release
