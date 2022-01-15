@@ -52,12 +52,24 @@ class Container {
     };
 
     const container = await this.container;
+
+    // let before = performance.now();
     const exe = await container.exec(options);
+    // let after = performance.now();
+    // console.log(`exec create took: ${after - before} ms`);
+
+    // before = performance.now();
     const stream = await exe.start();
+    // after = performance.now();
+    // console.log(`exec start took: ${after - before} ms`);
+
     stream.pipe(stdout);
 
+    // before = performance.now();
     const closedStream = new Promise((resolve, reject) => {
       stream.on('close', () => {
+        // after = performance.now();
+        // console.log(`stream close took: ${after - before} ms`);
         const output = stdout.toString();
         resolve(output)
       })
@@ -73,7 +85,7 @@ class CachingContainer extends Container {
   constructor(command, customOptions = {}) {
     const defaultOptions = {
       Image: "ubuntu",
-      Cmd: ["sleep", "300"],
+      Cmd: ["sleep", "infinity"],
       AttachStdout: true,
       AttachStderr: true,
       Tty: true,
@@ -115,12 +127,7 @@ const containers = {
   date: "date-runner",
 };
 
-const dateRunner = new Container({
-  Image: "ubuntu",
-  Cmd: ["date", "+%s"],
-  AttachStdout: true,
-  Tty: true,
-})
+const dateRunner = new CachingContainer(["date", "+%s"]);
 
 const callContainer = () => {
   return docker.run("ubuntu", ["date", "+%s"], process.stdout, { AutoRemove: true });

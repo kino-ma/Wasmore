@@ -18,12 +18,6 @@ describe("Test the container utility", () => {
     expect(stdout).not.toBeFalsy()
   })
 
-  test("It can start container with wrapper function", async () => {
-    const container = dateRunner;
-    const { stdout } = await container.run();
-    expect(stdout).not.toBeFalsy()
-  });
-
   test("It can run `exec` on a running Container", async () => {
     const container = new Container({
       Image: "ubuntu",
@@ -45,5 +39,18 @@ describe("Test the container utility", () => {
     ]);
     const output = await container.startAndExec();
     expect(output).not.toBeFalsy();
+  })
+
+  test("cache also works with dateRunner", async () => {
+    const container = dateRunner;
+
+    // let before = performance.now();
+    const output = await container.startAndExec();
+    // let after = performance.now();
+    // console.log(`startAndExec took: ${after - before} ms`);
+
+    expect(output).not.toBeFalsy();
+    const outputAgain = await container.startAndExec();
+    expect(outputAgain).not.toBeFalsy();
   })
 });
