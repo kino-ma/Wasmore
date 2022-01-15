@@ -36,7 +36,7 @@ rust-container:
 	$(DOCKER_RUST_START)
 
 bin:
-	$(CARGO) build 
+	$(CARGO) build --release
 
 wasm: $(WASM_BIND)
 
