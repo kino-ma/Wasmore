@@ -108,11 +108,16 @@ class Container {
     // console.log("ended writing", { ended })
 
     process.stdin.setRawMode(true)
-    stream._output.pipe(stdout);
+    stream._output.pipe(stdout, { end: true });
     // const input = new streams.ReadableStream("date\n");
     // input.pipe(stream);
     process.stdin.pipe(stream);
     // input.write("date")
+    stream.on('end', () => {
+      // after = performance.now();
+      // console.log(`stream close took: ${after - before} ms`);
+      console.log("outer end event")
+    })
 
     // stdout.pipe(process.stdout)
 
@@ -120,6 +125,13 @@ class Container {
     console.log("piped")
     process.stdin.setRawMode(false)
     process.stdin.resume()
+
+    stdout.on('close', () => {
+      console.log('stdout closed')
+    })
+    process.stdin.on('close', () => {
+      console.log("stdin closed")
+    })
 
     setTimeout(() => {
       // stream.close();
@@ -182,8 +194,8 @@ const containers = {
 const dateRunner = new CachingContainer(["date", "+%s"]);
 
 // const helloContainer = new CachingContainer(["/root/faas_bin", "hello"]);
-// const helloContainer = new CachingContainer(["timeout", "4", "head", "-n", "1"]);
-const helloContainer = new CachingContainer(["sh"]);
+const helloContainer = new CachingContainer(["timeout", "4", "head", "-n", "1"]);
+// const helloContainer = new CachingContainer(["sh"]);
 
 const callContainer = () => {
   return docker.run("ubuntu", ["date", "+%s"], process.stdout, { AutoRemove: true });
