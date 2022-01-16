@@ -1,5 +1,6 @@
 const Docker = require('dockerode');
 const streams = require("memory-streams");
+const Stream = require('stream');
 
 const wait = require("./wait");
 
@@ -109,10 +110,10 @@ class Container {
 
     process.stdin.setRawMode(true)
     stream._output.pipe(stdout, { end: true });
-    // const input = new streams.ReadableStream("date\n");
-    // input.pipe(stream);
-    process.stdin.pipe(stream);
-    // input.write("date")
+    const input = new streams.ReadableStream("some data");
+    input.pipe(stream);
+    // input.destroy()
+    // process.stdin.pipe(stream);
     stream.on('end', () => {
       // after = performance.now();
       // console.log(`stream close took: ${after - before} ms`);
@@ -129,17 +130,26 @@ class Container {
     stdout.on('close', () => {
       console.log('stdout closed')
     })
-    process.stdin.on('close', () => {
-      console.log("stdin closed")
+    input.on('close', () => {
+      console.log("input closed")
+    })
+    input.on('end', () => {
+      console.log("input ended")
     })
 
     setTimeout(() => {
       // stream.close();
       stream.end();
+      // var buffers = [];
+      // stdout.buffer.forEach(function (data) {
+      //   buffers.push(data.chunk);
+      // });
+
+      // const buffer = Buffer.concat(buffers);
       const output = stdout.toString();
       console.log({ timeout: output })
 
-    }, 10000)
+    }, 3000)
 
 
     return closedStream;
