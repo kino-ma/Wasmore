@@ -108,16 +108,26 @@ class Container {
     // console.log("ended writing", { ended })
 
     process.stdin.setRawMode(true)
-    stream._output.pipe(process.stdout);
-    const input = new streams.ReadableStream("date\n");
-    input.pipe(stream);
-    // process.stdin.pipe(stream);
+    stream._output.pipe(stdout);
+    // const input = new streams.ReadableStream("date\n");
+    // input.pipe(stream);
+    process.stdin.pipe(stream);
     // input.write("date")
+
+    // stdout.pipe(process.stdout)
 
     // stream.write("echo hello; ls /");
     console.log("piped")
     process.stdin.setRawMode(false)
     process.stdin.resume()
+
+    setTimeout(() => {
+      // stream.close();
+      stream.end();
+      const output = stdout.toString();
+      console.log({ timeout: output })
+
+    }, 10000)
 
 
     return closedStream;
