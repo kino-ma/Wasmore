@@ -109,7 +109,11 @@ class Container {
 
     process.stdin.setRawMode(true)
     stream._output.pipe(process.stdout);
-    process.stdin.pipe(stream);
+    const input = new streams.ReadableStream("date\n");
+    input.pipe(stream);
+    // process.stdin.pipe(stream);
+    // input.write("date")
+
     // stream.write("echo hello; ls /");
     console.log("piped")
     process.stdin.setRawMode(false)
