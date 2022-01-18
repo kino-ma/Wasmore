@@ -1,5 +1,5 @@
 const Docker = require('dockerode');
-const streams = require("memory-streams");
+const streams = require("../utils/stream");
 const Stream = require('stream');
 
 const wait = require("./wait");
@@ -109,8 +109,8 @@ class Container {
     // console.log("ended writing", { ended })
 
     process.stdin.setRawMode(true)
-    stream._output.pipe(stdout, { end: true });
-    const input = new streams.ReadableStream("some data");
+    stream._output.pipe(process.stdout, { end: true });
+    const input = new streams.ReadableStream("some data\n");
     input.pipe(stream);
     // input.destroy()
     // process.stdin.pipe(stream);
@@ -203,8 +203,8 @@ const containers = {
 
 const dateRunner = new CachingContainer(["date", "+%s"]);
 
-// const helloContainer = new CachingContainer(["/root/faas_bin", "hello"]);
-const helloContainer = new CachingContainer(["timeout", "4", "head", "-n", "1"]);
+const helloContainer = new CachingContainer(["/root/faas_bin", "hello"]);
+// const helloContainer = new CachingContainer(["timeout", "4", "head", "-n", "1"]);
 // const helloContainer = new CachingContainer(["sh"]);
 
 const callContainer = () => {
