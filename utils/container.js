@@ -60,12 +60,9 @@ class Container {
     // let after = performance.now();
     // console.log(`exec create took: ${after - before} ms`);
 
-    // const buf = new streams.ReadableStream("hello");
-
     // before = performance.now();
     console.log("exec start");
     const execStartOptions = {
-      // hijack: true,
       stdin: true,
     }
     const stream = await exe.start(execStartOptions);
@@ -73,10 +70,6 @@ class Container {
     console.log({ execStream: stream });
     // after = performance.now();
     // console.log(`exec start took: ${after - before} ms`);
-
-    // stream.on('readable', () => {
-    //   console.log("readable", stream.read());
-    // })
 
     // before = performance.now();
     const closedStream = new Promise((resolve, reject) => {
@@ -98,22 +91,10 @@ class Container {
       stream.on('error', reject);
     })
 
-    // const res = stream.write("nodejs writing\r\n second line");
-    // stream.write("nodejs writing\r\n second line");
-    // stream.write("nodejs writing\r\n second line");
-    // stream.write("nodejs writing\r\n second line");
-    // stream.write("nodejs writing\r\n second line");
-    // stream.write("nodejs writing\r\n second line");
-    // console.log({ writtenStream: stream, writeResult: res });
-    // const ended = stream.end();
-    // console.log("ended writing", { ended })
-
     process.stdin.setRawMode(true)
     stream._output.pipe(stdout, { end: true });
     const input = new streams.ReadableStream("some data\n");
     input.pipe(stream);
-    // input.destroy()
-    // process.stdin.pipe(stream);
     stream.on('end', () => {
       // after = performance.now();
       // console.log(`stream close took: ${after - before} ms`);
@@ -127,25 +108,13 @@ class Container {
     process.stdin.setRawMode(false)
     process.stdin.resume()
 
-    stdout.on('close', () => {
-      console.log('stdout closed')
-    })
     input.on('close', () => {
       console.log("input closed")
     })
-    input.on('end', () => {
-      console.log("input ended")
-    })
 
     setTimeout(() => {
-      // stream.close();
       stream.end();
-      // var buffers = [];
-      // stdout.buffer.forEach(function (data) {
-      //   buffers.push(data.chunk);
-      // });
 
-      // const buffer = Buffer.concat(buffers);
       const output = stdout.toString();
       console.log({ timeout: output })
 
