@@ -109,7 +109,7 @@ class Container {
     // console.log("ended writing", { ended })
 
     process.stdin.setRawMode(true)
-    stream._output.pipe(process.stdout, { end: true });
+    stream._output.pipe(stdout, { end: true });
     const input = new streams.ReadableStream("some data\n");
     input.pipe(stream);
     // input.destroy()
