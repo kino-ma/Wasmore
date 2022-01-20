@@ -60,13 +60,10 @@ class Container {
     // console.log(`exec create took: ${after - before} ms`);
 
     // before = performance.now();
-    console.log("exec start");
     const execStartOptions = {
       stdin: true,
     }
     const stream = await exe.start(execStartOptions);
-    console.log("exec start end");
-    console.log({ execStream: stream });
     // after = performance.now();
     // console.log(`exec start took: ${after - before} ms`);
     const input = new streams.ReadableStream("some data\n");
@@ -76,7 +73,6 @@ class Container {
       stream.on('end', () => {
         // after = performance.now();
         // console.log(`stream close took: ${after - before} ms`);
-        console.log("end event")
         const output = stdout.toString();
         resolve(output)
       })
