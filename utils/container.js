@@ -137,11 +137,11 @@ const containers = {
 const dateRunner = new CachingContainer(["date", "+%s"]);
 
 const helloContainer = new CachingContainer(["/root/faas_bin", "hello"]);
-// const helloContainer = new CachingContainer(["timeout", "4", "head", "-n", "1"]);
-// const helloContainer = new CachingContainer(["sh"]);
+const lightContainer = new CachingContainer(["/root/faas_bin", "light"]);
+const heavyContainer = new CachingContainer(["/root/faas_bin", "heavy"]);
 
 const callContainer = () => {
   return docker.run("ubuntu", ["date", "+%s"], process.stdout, { AutoRemove: true });
 };
 
-module.exports = { Container, CachingContainer, docker, callContainer, dateRunner, helloContainer };
+module.exports = { Container, CachingContainer, docker, callContainer, dateRunner, helloContainer, lightContainer, heavyContainer };
