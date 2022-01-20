@@ -27,6 +27,9 @@ const date = async (_input) => {
 
 const invokeHello = async (input) => {
   const container = helloContainer;
+  if (input.indexOf('\n') < 0) {
+    input += "\n";
+  }
   const output = await container.startAndExec(input);
   return output;
 }
