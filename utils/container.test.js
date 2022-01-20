@@ -1,3 +1,4 @@
+const stream = require("../utils/stream")
 const { Container, CachingContainer, callContainer, dateRunner, helloContainer } = require("./container");
 
 describe("Test the container utility", () => {
@@ -26,7 +27,7 @@ describe("Test the container utility", () => {
     });
 
     await container.run(wait = false);
-    const output = await container.exec(["bash", "-c", "uname -a && sleep 0.1 && echo next"]);
+    const output = await container.exec(["bash", "-c", "'uname -a && sleep 0.1 && echo next'"], new stream.ReadableStream("hogehoge\n"));
 
     expect(output).not.toBeFalsy();
   })
@@ -56,7 +57,7 @@ describe("Test the container utility", () => {
 
   test("a binary can be run inside the container", async () => {
     const container = helloContainer;
-    const output = await container.startAndExec();
+    const output = await container.startAndExec("hoge\n");
     expect(output).not.toBeFalsy();
   })
 });
