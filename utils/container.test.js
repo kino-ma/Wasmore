@@ -1,4 +1,4 @@
-const { Container, CachingContainer, callContainer, dateRunner } = require("./container");
+const { Container, CachingContainer, callContainer, dateRunner, helloContainer } = require("./container");
 
 describe("Test the container utility", () => {
   test("It can use Docker API", async () => {
