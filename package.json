@@ -9,9 +9,9 @@
   "dependencies": {
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
-    "dockerode": "^3.3.1",
+    "dockerode": "https://github.com/kino-ma/dockerode#exec-buf",
     "express": "~4.16.1",
-    "faas-app": "./faas-app/pkg/",
+    "faas-app": "./faas-app/pkg",
     "http-errors": "~1.6.3",
     "memory-streams": "^0.1.3",
     "morgan": "~1.9.1",

@@ -1,5 +1,5 @@
 const Docker = require('dockerode');
-const streams = require("memory-streams");
+const streams = require("../utils/stream");
 
 const wait = require("./wait");
 
@@ -41,13 +41,14 @@ class Container {
     return output;
   }
 
-  async exec(command) {
+  async exec(command, stdin = new streams.ReadableStream(null)) {
     const stdout = new streams.WritableStream();
 
     const options = {
       Cmd: command,
       AttachStdout: true,
       AttachStderr: true,
+      AttachStdin: true,
       Tty: true,
     };
 
@@ -59,15 +60,16 @@ class Container {
     // console.log(`exec create took: ${after - before} ms`);
 
     // before = performance.now();
-    const stream = await exe.start();
+    const execStartOptions = {
+      stdin: true,
+    }
+    const stream = await exe.start(execStartOptions);
     // after = performance.now();
     // console.log(`exec start took: ${after - before} ms`);
 
-    stream.pipe(stdout);
-
     // before = performance.now();
     const closedStream = new Promise((resolve, reject) => {
-      stream.on('close', () => {
+      stream.on('end', () => {
         // after = performance.now();
         // console.log(`stream close took: ${after - before} ms`);
         const output = stdout.toString();
@@ -77,6 +79,9 @@ class Container {
       stream.on('error', reject);
     })
 
+    stream._output.pipe(stdout);
+    stdin.pipe(stream);
+
     return closedStream;
   }
 }
@@ -84,8 +89,7 @@ class Container {
 class CachingContainer extends Container {
   constructor(command, customOptions = {}) {
     const defaultOptions = {
-      Image: "ubuntu",
-      Cmd: ["sleep", "infinity"],
+      Image: "faas-bin",
       AttachStdout: true,
       AttachStderr: true,
       Tty: true,
@@ -109,17 +113,20 @@ class CachingContainer extends Container {
     }
 
     if (!this.running) {
+      const started = await super.start();
       this.running = true;
-      return super.start();
+      return started;
     }
   }
 
-  async startAndExec() {
+  async startAndExec(input = "") {
     if (!this.running) {
       await this.manualStart();
     }
 
-    return this.exec(this.command);
+    const stdin = new streams.ReadableStream(input);
+
+    return this.exec(this.command, stdin);
   }
 }
 
@@ -129,8 +136,12 @@ const containers = {
 
 const dateRunner = new CachingContainer(["date", "+%s"]);
 
+const helloContainer = new CachingContainer(["/root/faas_bin", "hello"]);
+const lightContainer = new CachingContainer(["/root/faas_bin", "light"]);
+const heavyContainer = new CachingContainer(["/root/faas_bin", "heavy"]);
+
 const callContainer = () => {
   return docker.run("ubuntu", ["date", "+%s"], process.stdout, { AutoRemove: true });
 };
 
-module.exports = { Container, CachingContainer, docker, callContainer, dateRunner };
+module.exports = { Container, CachingContainer, docker, callContainer, dateRunner, helloContainer, lightContainer, heavyContainer };
