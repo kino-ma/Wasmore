@@ -1,6 +1,5 @@
 const Docker = require('dockerode');
 const streams = require("../utils/stream");
-const Stream = require('stream');
 
 const wait = require("./wait");
 
@@ -70,16 +69,10 @@ class Container {
     console.log({ execStream: stream });
     // after = performance.now();
     // console.log(`exec start took: ${after - before} ms`);
+    const input = new streams.ReadableStream("some data\n");
 
     // before = performance.now();
     const closedStream = new Promise((resolve, reject) => {
-      stream.on('close', () => {
-        // after = performance.now();
-        // console.log(`stream close took: ${after - before} ms`);
-        console.log("close event")
-        const output = stdout.toString();
-        resolve(output)
-      })
       stream.on('end', () => {
         // after = performance.now();
         // console.log(`stream close took: ${after - before} ms`);
@@ -91,35 +84,8 @@ class Container {
       stream.on('error', reject);
     })
 
-    process.stdin.setRawMode(true)
-    stream._output.pipe(stdout, { end: true });
-    const input = new streams.ReadableStream("some data\n");
+    stream._output.pipe(stdout);
     input.pipe(stream);
-    stream.on('end', () => {
-      // after = performance.now();
-      // console.log(`stream close took: ${after - before} ms`);
-      console.log("outer end event")
-    })
-
-    // stdout.pipe(process.stdout)
-
-    // stream.write("echo hello; ls /");
-    console.log("piped")
-    process.stdin.setRawMode(false)
-    process.stdin.resume()
-
-    input.on('close', () => {
-      console.log("input closed")
-    })
-
-    setTimeout(() => {
-      stream.end();
-
-      const output = stdout.toString();
-      console.log({ timeout: output })
-
-    }, 3000)
-
 
     return closedStream;
   }
