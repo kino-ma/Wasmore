@@ -1,6 +1,6 @@
 const streams = require("memory-streams");
 const { hello, heavy_task, light_task } = require("faas-app");
-const { callContainer, dateRunner } = require("../utils/container");
+const { callContainer, dateRunner, helloContainer } = require("../utils/container");
 
 const heavy = (input) => heavy_task(input);
 const light = (input) => light_task(input);
@@ -25,10 +25,17 @@ const date = async (_input) => {
   return output;
 };
 
+const invokeHello = async (input) => {
+  const container = helloContainer;
+  const output = await container.startAndExec(input);
+  return output;
+}
+
 module.exports = {
   heavy,
   light,
   container,
   date,
   hello,
+  invokeHello
 };
