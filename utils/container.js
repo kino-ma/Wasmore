@@ -41,7 +41,7 @@ class Container {
     return output;
   }
 
-  async exec(command) {
+  async exec(command, stdin = new streams.ReadableStream(null)) {
     const stdout = new streams.WritableStream();
 
     const options = {
@@ -66,7 +66,6 @@ class Container {
     const stream = await exe.start(execStartOptions);
     // after = performance.now();
     // console.log(`exec start took: ${after - before} ms`);
-    const input = new streams.ReadableStream("some data\n");
 
     // before = performance.now();
     const closedStream = new Promise((resolve, reject) => {
@@ -81,7 +80,7 @@ class Container {
     })
 
     stream._output.pipe(stdout);
-    input.pipe(stream);
+    stdin.pipe(stream);
 
     return closedStream;
   }
@@ -119,12 +118,14 @@ class CachingContainer extends Container {
     }
   }
 
-  async startAndExec() {
+  async startAndExec(input = "") {
     if (!this.running) {
       await this.manualStart();
     }
 
-    return this.exec(this.command);
+    const stdin = new streams.ReadableStream(input);
+
+    return this.exec(this.command, stdin);
   }
 }
 
