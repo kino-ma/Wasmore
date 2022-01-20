@@ -113,8 +113,9 @@ class CachingContainer extends Container {
     }
 
     if (!this.running) {
+      const started = await super.start();
       this.running = true;
-      return super.start();
+      return started;
     }
   }
 
