@@ -8,8 +8,8 @@ class ReadableStream extends Stream.Readable {
   }
   _read(n) {
     this.push(this._data);
+    this.emit('close')
     this._data = '';
-    this.destroy()
   }
 }
 
@@ -31,7 +31,7 @@ class WritableStream extends Stream.Writable {
   }
   toBuffer() {
     var buffers = [];
-    this._writableState.buffer.forEach(function (data) {
+    this._writableState.getBuffer().forEach(function (data) {
       buffers.push(data.chunk);
     });
 
