@@ -23,10 +23,7 @@ const heavy = (input) => {
     container.manualStart();
     return callVirtualized(heavy_task, input);
   } else {
-    if (input.indexOf('\n') < 0) {
-      input += "\n";
-    }
-    return container.startAndExec(input)
+    return container.startAndExec({ input: parseInt(input), task: "heavy" })
   }
 };
 
@@ -36,10 +33,7 @@ const light = (input) => {
     container.manualStart();
     return callVirtualized(light_task, input);
   } else {
-    if (input.indexOf('\n') < 0) {
-      input += "\n";
-    }
-    return container.startAndExec(input)
+    return container.startAndExec({ input: parseInt(input), task: "light" })
   }
 };
 
@@ -65,11 +59,7 @@ const date = async (_input) => {
 
 const invokeHello = async (input) => {
   const container = helloContainer;
-  if (input.indexOf('\n') < 0) {
-    input += "\n";
-  }
-  const output = await container.startAndExec(input);
-  return output;
+  return container.startAndExec({ input, task: "hello" });
 }
 
 const invokeWasmHello = async (name) => {
