@@ -2066,8 +2066,8 @@ __metadata:
 
 "faas-app@file:./faas-app/pkg::locator=serverless-edge%40workspace%3A.":
   version: 0.1.0
-  resolution: "faas-app@file:./faas-app/pkg#./faas-app/pkg::hash=88bc44&locator=serverless-edge%40workspace%3A."
-  checksum: 7e3b555c24ad52118dc07317508b6e5d9c846ef264b170ad59a40c5f8b9aafc92240c457fe05669621436dff1957b22b56503c7eb6b19bf3544ad968893fe106
+  resolution: "faas-app@file:./faas-app/pkg#./faas-app/pkg::hash=cfab04&locator=serverless-edge%40workspace%3A."
+  checksum: 4e9db17d790e3bbb41904851fc3bf778587c5c68b4e7ca20c771d8313bcad4a2f3da2c107af519f58f7abe77caaa1261f7b1b603a184b10e11d94b7eb1f030fa
   languageName: node
   linkType: hard
 
