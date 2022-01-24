@@ -1,38 +1,33 @@
-use std::env;
-use std::io::stdin;
+use std::io;
+
+use serde_json::{json, Value};
 
 use faas_lib as lib;
+use lib::Input;
 
 fn main() {
-    let input = stdin();
+    let stdin = io::stdin();
+    let mut buf = String::new();
+    stdin.read_line(&mut buf).unwrap();
 
-    let output: String = match env::args().nth(1).unwrap().as_str() {
+    let input: Input = serde_json::from_str(&buf).expect("invalid input");
+
+    let output: Value = match input.task.as_str() {
         "light" => {
-            let mut buf = String::new();
-            input.read_line(&mut buf).expect("failed to read input");
-            let arg = buf
-                .trim()
-                .parse::<isize>()
-                .expect("Invalid input (it must be a number)");
-            let output = lib::light_task(arg);
-            output.to_string()
+            let input = input.input.as_i64().expect("invalid number") as isize;
+            let output = lib::light_task(input);
+            json!(output)
         }
 
         "heavy" => {
-            let mut buf = String::new();
-            input.read_line(&mut buf).expect("failed to read input");
-            let arg = buf
-                .trim()
-                .parse::<isize>()
-                .expect("Invalid input (it must be a number)");
-            let output = lib::heavy_task(arg);
-            output.to_string()
+            let input = input.input.as_i64().expect("invalid number") as isize;
+            let output = lib::heavy_task(input);
+            json!(output)
         }
 
         "hello" => {
-            let mut buf = String::new();
-            input.read_line(&mut buf).expect("failed to read input");
-            lib::hello(&buf)
+            let input = input.input.to_string();
+            json!(lib::hello(&input))
         }
 
         _ => {
@@ -40,5 +35,5 @@ fn main() {
         }
     };
 
-    print!("{}", output);
+    print!(r#"{{"output":{}"#, output);
 }

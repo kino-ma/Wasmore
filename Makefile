@@ -1,5 +1,6 @@
 SHELL := /bin/bash
 WASM_BIND := faas-app/pkg/faas_app.js
+NATIVE_BUILD := faas-app/target/release/faas_bin
 DOCKER_RUST_NAME := faas-app-rust
 DOCKER_BIN_NAME := faas-bin
 UNAME := $(shell uname)
@@ -37,10 +38,12 @@ install: package.json
 rust-container:
 	$(DOCKER_RUST_START)
 
-bin-runner: bin
-	docker build -t $(DOCKER_BIN_NAME) .
+bin-runner: $(NATIVE_BUILD)
+	docker build -t $(DOCKER_BIN_NAME) --no-cache .
 
-bin:
+bin: $(NATIVE_BUILD)
+
+$(NATIVE_BUILD):
 	$(CARGO) build --release
 
 wasm: $(WASM_BIND)

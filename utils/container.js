@@ -119,10 +119,17 @@ class CachingContainer extends Container {
     }
   }
 
-  async startAndExec(input = "") {
+  async startAndExec(input) {
     if (!this.running) {
       await this.manualStart();
     }
+
+    if (typeof input === "object") {
+      input = JSON.stringify(input) + "\n";
+    } else if (typeof input === "undefined") {
+      input = ""
+    }
+    console.log({ input })
 
     const stdin = new streams.ReadableStream(input);
 
@@ -136,9 +143,9 @@ const containers = {
 
 const dateRunner = new CachingContainer(["date", "+%s"]);
 
-const helloContainer = new CachingContainer(["/root/faas_bin", "hello"]);
-const lightContainer = new CachingContainer(["/root/faas_bin", "light"]);
-const heavyContainer = new CachingContainer(["/root/faas_bin", "heavy"]);
+const helloContainer = new CachingContainer(["/root/faas_bin"]);
+const lightContainer = new CachingContainer(["/root/faas_bin"]);
+const heavyContainer = new CachingContainer(["/root/faas_bin"]);
 
 const callContainer = () => {
   return docker.run("ubuntu", ["date", "+%s"], process.stdout, { AutoRemove: true });
