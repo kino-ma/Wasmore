@@ -1,16 +1,77 @@
+SHELL := /bin/bash
+WASM_BIND := faas-app/pkg/faas_app.js
+DOCKER_RUST_NAME := faas-app-rust
+DOCKER_BIN_NAME := faas-bin
+UNAME := $(shell uname)
+
+ifeq (, $(shell which cargo))
+	CARGO := $(DOCKER_RUST_EXEC) cargo
+	DOCKER_RUST_CREATE := docker container create -it --name $(DOCKER_RUST_NAME) --volume "$$PWD/faas-app:/app" --workdir '/app' rust:latest bash
+	DOCKER_RUST_START := docker start $(DOCKER_RUST_NAME)
+	DOCKER_RUST_EXEC := docker exec -i faas-app-rust
+else
+	CARGO := cd faas-app && cargo
+	DOCKER_RUST_CREATE := echo "cargo exists"
+	DOCKER_RUST_START := echo "using host cargo"
+	DOCKER_RUST_EXEC := cd faas-app &&
+endif
+
 default: run
 
-run: faas-app/pkg/faas_app.js
+.PHONY: default run install test test-js test-rs check check-rs check-js rust-container bin-runner clean-container
+
+run:
 	yarn run start
 
-faas-app/pkg/faas_app.js: faas-app/src/lib.rs
-	cd faas-app && wasm-pack build --target nodejs
+install: package.json
+	$(DOCKER_RUST_CREATE)
+	$(MAKE) rust-container
+	$(CARGO) install wasm-pack
+	$(MAKE) $(WASM_BIND)
+	$(MAKE) bin
+	yarn
+	docker pull ubuntu:latest
+	$(MAKE) bin-runner
+	@echo OK
+
+rust-container:
+	$(DOCKER_RUST_START)
+
+bin-runner: bin
+	docker build -t $(DOCKER_BIN_NAME) .
+
+bin:
+	$(CARGO) build --release
+
+wasm: $(WASM_BIND)
+
+$(WASM_BIND): faas-app/src/lib.rs
+	$(DOCKER_RUST_EXEC) wasm-pack build --target nodejs . --features wasm
 
 test: test-js test-rs
 	@echo OK
 
-test-js:
+test-js: clean-container
 	yarn test
+	$(MAKE) clean-container
 
-test-rs:
-	cd faas-app && cargo test
+test-rs: rust-container
+	$(CARGO) test
+
+check: check-rs check-js
+	@echo OK
+
+check-rs: rust-container
+	$(CARGO) check
+
+check-js:
+	find . \
+		-iname '*.js' \
+		-type f \
+		-not -path './node_modules/*' \
+		-not -path './faas-app/pkg/*' \
+		-exec node --check {} \;
+
+# ignore errors
+clean-container:
+	-docker ps -a | grep -E 'ubuntu|faas-bin' | grep -E 'date|sleep' | awk '{print $$1}' | xargs docker rm -f
