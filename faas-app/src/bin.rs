@@ -26,7 +26,7 @@ fn main() {
                 .parse::<isize>()
                 .expect("Invalid input (it must be a number)");
             let output = lib::heavy_task(arg);
-            format!("[{},{}]", output[0], output[1])
+            format!("[{:.9},{:.9}]", output[0], output[1])
         }
 
         "hello" => {
