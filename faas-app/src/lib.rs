@@ -1,3 +1,5 @@
+mod nbody;
+
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
@@ -7,12 +9,9 @@ pub fn hello(name: &str) -> String {
 }
 
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
-pub fn heavy_task(input: isize) -> isize {
-    let mut sum = 0;
-    for _ in 1..=input {
-        sum += input;
-    }
-    sum
+pub fn heavy_task(input: isize) -> Box<[f64]> {
+    let (a, b) = nbody::run(input as usize);
+    Box::new([a, b])
 }
 
 /// Caluclates the Nth fibonacci number

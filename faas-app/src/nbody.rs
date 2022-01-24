@@ -263,7 +263,7 @@ pub fn advance(bodies: &mut [Body; N_BODIES], dt: f64) {
     }
 }
 
-fn run(n: usize) -> (f64, f64) {
+pub fn run(n: usize) -> (f64, f64) {
     let mut bodies = bodies();
     offset_momentum(&mut bodies);
     let energy_before = energy(&bodies);
