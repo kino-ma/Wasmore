@@ -1,3 +1,4 @@
+const { VM } = require("vm2");
 const { date, invokeWasmHello } = require("./invoker")
 
 describe("Test Invoker", () => {
@@ -14,5 +15,17 @@ describe("Test Invoker", () => {
     const name2 = "makino";
     const output2 = await invokeWasmHello(name2 + "dayo");
     expect(output2).not.toBe(`hello, ${name2}`);
+  })
+
+  test("vm2 has correct access rights", () => {
+    const sandbox = {
+      hoge: "fuga"
+    }
+    const vm = new VM({ sandbox });
+
+    const hoge = vm.run("hoge");
+    expect(hoge).toBe(sandbox.hoge);
+
+    expect(() => vm.run("fuga")).toThrow('fuga is not defined');
   })
 });
