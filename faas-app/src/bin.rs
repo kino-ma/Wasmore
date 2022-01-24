@@ -1,35 +1,39 @@
-use std::env;
 use std::io;
+use std::io::Read;
 
-use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
 use faas_lib as lib;
 
 #[derive(Serialize, Deserialize)]
-struct Input<T> {
-    input: T,
+struct Input {
+    input: Value,
+    task: String,
 }
 
 fn main() {
-    let stdin = io::stdin();
+    let mut stdin = io::stdin();
+    let mut buf = String::new();
+    stdin.read_to_string(&mut buf).unwrap();
 
-    let output: Value = match env::args().nth(1).unwrap().as_str() {
+    let input: Input = serde_json::from_str(&buf).expect("invalid input");
+
+    let output: Value = match input.task.as_str() {
         "light" => {
-            let input = read_input(stdin);
+            let input = input.input.as_i64().expect("invalid number") as isize;
             let output = lib::light_task(input);
             json!(output)
         }
 
         "heavy" => {
-            let input = read_input(stdin);
+            let input = input.input.as_i64().expect("invalid number") as isize;
             let output = lib::heavy_task(input);
             json!(output)
         }
 
         "hello" => {
-            let input: String = read_input(stdin);
+            let input = input.input.to_string();
             json!(lib::hello(&input))
         }
 
@@ -39,9 +43,4 @@ fn main() {
     };
 
     print!(r#"{{"output":{}"#, output);
-}
-
-fn read_input<T: DeserializeOwned>(stream: std::io::Stdin) -> T {
-    let input: Input<T> = serde_json::from_reader(stream).expect("invalid input");
-    input.input
 }
