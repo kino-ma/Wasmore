@@ -1,4 +1,4 @@
-const { date, hello } = require("./invoker")
+const { date, invokeWasmHello } = require("./invoker")
 
 describe("Test Invoker", () => {
   test("Date invoker  should return date", async () => {
@@ -8,7 +8,7 @@ describe("Test Invoker", () => {
 
   test("wasm invoker", async () => {
     const name = "kino-ma";
-    const output = hello(name);
+    const output = await invokeWasmHello(name);
     expect(output).toBe(`hello, ${name}`);
   })
 });
