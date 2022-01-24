@@ -1,21 +1,14 @@
 use std::io;
-use std::io::Read;
 
-use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
 use faas_lib as lib;
-
-#[derive(Serialize, Deserialize)]
-struct Input {
-    input: Value,
-    task: String,
-}
+use lib::Input;
 
 fn main() {
-    let mut stdin = io::stdin();
+    let stdin = io::stdin();
     let mut buf = String::new();
-    stdin.read_to_string(&mut buf).unwrap();
+    stdin.read_line(&mut buf).unwrap();
 
     let input: Input = serde_json::from_str(&buf).expect("invalid input");
 

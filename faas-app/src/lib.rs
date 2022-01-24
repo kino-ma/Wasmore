@@ -1,7 +1,50 @@
 mod nbody;
 
+use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
+
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
+
+#[derive(Serialize, Deserialize)]
+pub struct Input {
+    pub input: Value,
+    pub task: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Output {
+    output: Value,
+}
+
+pub fn main(args: Value) -> Result<Value, serde_json::Error> {
+    let input: Input = serde_json::from_value(args)?;
+
+    let output: Value = match input.task.as_str() {
+        "light" => {
+            let input = input.input.as_i64().expect("invalid number") as isize;
+            let output = light_task(input);
+            json!(output)
+        }
+
+        "heavy" => {
+            let input = input.input.as_i64().expect("invalid number") as isize;
+            let output = heavy_task(input);
+            json!(output)
+        }
+
+        "hello" => {
+            let input = input.input.to_string();
+            json!(hello(&input))
+        }
+
+        _ => {
+            panic!("unexpected input")
+        }
+    };
+
+    return Ok(output);
+}
 
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub fn hello(name: &str) -> String {
