@@ -19,22 +19,22 @@ const callVirtualized = (func, arg) => {
 
 const heavy = (input) => {
   const container = heavyContainer
-  if (!container.running) {
-    container.manualStart();
-    return callVirtualized(heavy_task, input);
-  } else {
-    return container.startAndExec({ input: parseInt(input), task: "heavy" })
-  }
+  // if (!container.running) {
+  //   container.manualStart();
+  //   return callVirtualized(heavy_task, input);
+  // } else {
+  return container.startAndExec({ input: parseInt(input), task: "heavy" })
+  // }
 };
 
 const light = (input) => {
   const container = lightContainer
-  if (!container.running) {
-    container.manualStart();
-    return callVirtualized(light_task, input);
-  } else {
-    return container.startAndExec({ input: parseInt(input), task: "light" })
-  }
+  // if (!container.running) {
+  //   container.manualStart();
+  //   return callVirtualized(light_task, input);
+  // } else {
+  return container.startAndExec({ input: parseInt(input), task: "light" })
+  // }
 };
 
 const container = async (input) => {
