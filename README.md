@@ -1,4 +1,4 @@
-# Serverless edge
-Prototype implementation of my research, which is trying to make edge computing with FaaS faster.
+# Wasmore
+**Wasmore** gives FaaS computing *more* speed, with *Wasm*.
 
-In this prototype, we use WebAssembly to decrease startup time.
+Prototype implementation of my research, which make FaaS computing faster by combinating WebAssembly and container.
