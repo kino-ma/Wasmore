@@ -1,6 +1,6 @@
 {
   "name": "serverless-edge",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "start": "node ./server/bin/www",
@@ -21,5 +21,6 @@
   "devDependencies": {
     "jest": "^27.4.3",
     "supertest": "^6.1.6"
-  }
+  },
+  "packageManager": "yarn@3.1.1"
 }
