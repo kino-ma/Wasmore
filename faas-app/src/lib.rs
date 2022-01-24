@@ -15,9 +15,18 @@ pub fn heavy_task(input: isize) -> isize {
     sum
 }
 
+/// Caluclates the Nth fibonacci number
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub fn light_task(input: isize) -> isize {
-    input + input
+    let n = input as usize;
+    let mut fibs = vec![0isize; n + 1];
+    fibs[1] = 1;
+
+    for i in 2..=n {
+        fibs[i] = fibs[i - 2] + fibs[i - 1];
+    }
+
+    return fibs[n];
 }
 
 #[cfg(test)]
@@ -30,5 +39,12 @@ mod tests {
         let actual = hello("rust-test");
 
         assert_eq!(expect, actual);
+    }
+
+    #[test]
+    fn hundredth_fib() {
+        let fib50 = light_task(50);
+
+        assert_eq!(fib50, 12586269025)
     }
 }
