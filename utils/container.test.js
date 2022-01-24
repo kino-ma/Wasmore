@@ -56,8 +56,9 @@ describe("Test the container utility", () => {
   })
 
   test("a binary can be run inside the container", async () => {
+    const name = "hoge";
     const container = helloContainer;
-    const output = await container.startAndExec("hoge\n");
-    expect(output).not.toBeFalsy();
+    const output = await container.startAndExec(`${name}\n`);
+    expect(output).toBe(`hello, ${name}`);
   })
 });
