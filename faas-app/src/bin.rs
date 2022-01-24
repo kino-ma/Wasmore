@@ -1,38 +1,36 @@
 use std::env;
-use std::io::stdin;
+use std::io;
+
+use serde::de::DeserializeOwned;
+use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
 
 use faas_lib as lib;
 
-fn main() {
-    let input = stdin();
+#[derive(Serialize, Deserialize)]
+struct Input<T> {
+    input: T,
+}
 
-    let output: String = match env::args().nth(1).unwrap().as_str() {
+fn main() {
+    let stdin = io::stdin();
+
+    let output: Value = match env::args().nth(1).unwrap().as_str() {
         "light" => {
-            let mut buf = String::new();
-            input.read_line(&mut buf).expect("failed to read input");
-            let arg = buf
-                .trim()
-                .parse::<isize>()
-                .expect("Invalid input (it must be a number)");
-            let output = lib::light_task(arg);
-            output.to_string()
+            let input = read_input(stdin);
+            let output = lib::light_task(input);
+            json!(output)
         }
 
         "heavy" => {
-            let mut buf = String::new();
-            input.read_line(&mut buf).expect("failed to read input");
-            let arg = buf
-                .trim()
-                .parse::<isize>()
-                .expect("Invalid input (it must be a number)");
-            let output = lib::heavy_task(arg);
-            format!("[{:.9},{:.9}]", output[0], output[1])
+            let input = read_input(stdin);
+            let output = lib::heavy_task(input);
+            json!(output)
         }
 
         "hello" => {
-            let mut buf = String::new();
-            input.read_line(&mut buf).expect("failed to read input");
-            lib::hello(&buf)
+            let input: String = read_input(stdin);
+            json!(lib::hello(&input))
         }
 
         _ => {
@@ -40,5 +38,10 @@ fn main() {
         }
     };
 
-    print!("{}", output);
+    print!(r#"{{"output":{}"#, output);
+}
+
+fn read_input<T: DeserializeOwned>(stream: std::io::Stdin) -> T {
+    let input: Input<T> = serde_json::from_reader(stream).expect("invalid input");
+    input.input
 }
