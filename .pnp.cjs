@@ -39,12 +39,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["debug", "virtual:3c4f7f349789d7597b53f6806dcbf71445596dd97a6a139314a632324e544d12b73623cfb0621bb9d37d8830b5ffbaf5935d9d709ca211a5a162bb877a1524e9#npm:2.6.9"],
             ["dockerode", "https://github.com/kino-ma/dockerode.git#commit=d9fb220592a808511ec0bba5c2a975405ef44fce"],
             ["express", "npm:4.16.4"],
-            ["faas-app", "file:./faas-app/pkg#./faas-app/pkg::hash=82d701&locator=serverless-edge%40workspace%3A."],
+            ["faas-app", "file:./faas-app/pkg#./faas-app/pkg::hash=88bc44&locator=serverless-edge%40workspace%3A."],
             ["http-errors", "npm:1.6.3"],
             ["jest", "virtual:972573b93ea133a3fb1c4a26fd4a7839cf65bab68bc33fdccf375629ab808cd1dc33c319d0ed9e5e99a5a02a1ee59968f26935d2d37a5c8bf9a3ec34d54f4306#npm:27.4.7"],
             ["memory-streams", "npm:0.1.3"],
             ["morgan", "npm:1.9.1"],
             ["pug", "npm:2.0.0-beta11"],
+            ["readable-stream", "npm:3.6.0"],
             ["supertest", "npm:6.2.2"],
             ["vm2", "npm:3.9.5"]
           ],
@@ -2769,10 +2770,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["faas-app", [
-        ["file:./faas-app/pkg#./faas-app/pkg::hash=82d701&locator=serverless-edge%40workspace%3A.", {
-          "packageLocation": "./.yarn/cache/faas-app-file-cc5838746d-0a9896464b.zip/node_modules/faas-app/",
+        ["file:./faas-app/pkg#./faas-app/pkg::hash=88bc44&locator=serverless-edge%40workspace%3A.", {
+          "packageLocation": "./.yarn/cache/faas-app-file-310fef92b8-7e3b555c24.zip/node_modules/faas-app/",
           "packageDependencies": [
-            ["faas-app", "file:./faas-app/pkg#./faas-app/pkg::hash=82d701&locator=serverless-edge%40workspace%3A."]
+            ["faas-app", "file:./faas-app/pkg#./faas-app/pkg::hash=88bc44&locator=serverless-edge%40workspace%3A."]
           ],
           "linkType": "HARD",
         }]
@@ -5408,12 +5409,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["debug", "virtual:3c4f7f349789d7597b53f6806dcbf71445596dd97a6a139314a632324e544d12b73623cfb0621bb9d37d8830b5ffbaf5935d9d709ca211a5a162bb877a1524e9#npm:2.6.9"],
             ["dockerode", "https://github.com/kino-ma/dockerode.git#commit=d9fb220592a808511ec0bba5c2a975405ef44fce"],
             ["express", "npm:4.16.4"],
-            ["faas-app", "file:./faas-app/pkg#./faas-app/pkg::hash=82d701&locator=serverless-edge%40workspace%3A."],
+            ["faas-app", "file:./faas-app/pkg#./faas-app/pkg::hash=88bc44&locator=serverless-edge%40workspace%3A."],
             ["http-errors", "npm:1.6.3"],
             ["jest", "virtual:972573b93ea133a3fb1c4a26fd4a7839cf65bab68bc33fdccf375629ab808cd1dc33c319d0ed9e5e99a5a02a1ee59968f26935d2d37a5c8bf9a3ec34d54f4306#npm:27.4.7"],
             ["memory-streams", "npm:0.1.3"],
             ["morgan", "npm:1.9.1"],
             ["pug", "npm:2.0.0-beta11"],
+            ["readable-stream", "npm:3.6.0"],
             ["supertest", "npm:6.2.2"],
             ["vm2", "npm:3.9.5"]
           ],
