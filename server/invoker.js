@@ -1,6 +1,21 @@
 const streams = require("memory-streams");
+const { VM } = require("vm2");
+
 const { hello, heavy_task, light_task } = require("faas-app");
 const { callContainer, dateRunner, helloContainer, lightContainer, heavyContainer } = require("../utils/container");
+
+const callVirtualized = (func, arg) => {
+  const globalObject = {
+    func,
+    arg
+  };
+
+  const vm = new VM({
+    sandbox: globalObject
+  });
+
+  return vm.run("func(arg)");
+}
 
 const heavy = (input) => {
   const container = heavyContainer
@@ -58,11 +73,15 @@ const invokeHello = async (input) => {
   return output;
 }
 
+const invokeWasmHello = async (name) => {
+  return callVirtualized(hello, name);
+}
+
 module.exports = {
   heavy,
   light,
   container,
   date,
-  hello,
+  invokeWasmHello,
   invokeHello
 };
