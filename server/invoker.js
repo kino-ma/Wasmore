@@ -1,12 +1,27 @@
 const streams = require("memory-streams");
+const { VM } = require("vm2");
+
 const { hello, heavy_task, light_task } = require("faas-app");
 const { callContainer, dateRunner, helloContainer, lightContainer, heavyContainer } = require("../utils/container");
+
+const callVirtualized = (func, arg) => {
+  const globalObject = {
+    func,
+    arg
+  };
+
+  const vm = new VM({
+    sandbox: globalObject
+  });
+
+  return vm.run("func(arg)");
+}
 
 const heavy = (input) => {
   const container = heavyContainer
   if (!container.running) {
     container.manualStart();
-    return heavy_task(input);
+    return callVirtualized(heavy_task, input);
   } else {
     if (input.indexOf('\n') < 0) {
       input += "\n";
@@ -19,7 +34,7 @@ const light = (input) => {
   const container = lightContainer
   if (!container.running) {
     container.manualStart();
-    return light_task(input);
+    return callVirtualized(light_task, input);
   } else {
     if (input.indexOf('\n') < 0) {
       input += "\n";
@@ -28,16 +43,15 @@ const light = (input) => {
   }
 };
 
-const container = (input) => {
-  return callContainer(input)
-    .then(([data, container]) => {
-      return data;
-    })
-    .catch((err) => {
-      if (err) {
-        console.error(err);
-      }
-    });
+const container = async (input) => {
+  try {
+    const [data, container] = await callContainer(input);
+    return data;
+  } catch (err) {
+    if (err) {
+      console.error(err);
+    }
+  }
 };
 
 const date = async (_input) => {
@@ -58,11 +72,15 @@ const invokeHello = async (input) => {
   return output;
 }
 
+const invokeWasmHello = async (name) => {
+  return callVirtualized(hello, name);
+}
+
 module.exports = {
   heavy,
   light,
   container,
   date,
-  hello,
+  invokeWasmHello,
   invokeHello
 };
