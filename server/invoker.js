@@ -21,7 +21,7 @@ const heavy = (input) => {
   const container = heavyContainer
   if (!container.running) {
     container.manualStart();
-    return heavy_task(input);
+    return callVirtualized(heavy_task, input);
   } else {
     if (input.indexOf('\n') < 0) {
       input += "\n";
@@ -34,7 +34,7 @@ const light = (input) => {
   const container = lightContainer
   if (!container.running) {
     container.manualStart();
-    return light_task(input);
+    return callVirtualized(light_task, input);
   } else {
     if (input.indexOf('\n') < 0) {
       input += "\n";
@@ -43,16 +43,15 @@ const light = (input) => {
   }
 };
 
-const container = (input) => {
-  return callContainer(input)
-    .then(([data, container]) => {
-      return data;
-    })
-    .catch((err) => {
-      if (err) {
-        console.error(err);
-      }
-    });
+const container = async (input) => {
+  try {
+    const [data, container] = await callContainer(input);
+    return data;
+  } catch (err) {
+    if (err) {
+      console.error(err);
+    }
+  }
 };
 
 const date = async (_input) => {
