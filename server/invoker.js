@@ -53,11 +53,11 @@ class ContainerInvoker extends ReusableInvoker {
   }
 
   async _invoke(input) {
-    const result = await container.startAndExec({
+    const result = await this.container.startAndExec({
       input: parseInt(input),
       task: this.task,
     });
-    const elapsed = container.elapsedTime.userProgram;
+    const elapsed = this.container.elapsedTime.userProgram;
 
     return { result, elapsed };
   }
@@ -133,4 +133,5 @@ module.exports = {
   invokeWasmHello,
   invokeHello,
   ReusableInvoker,
+  ContainerInvoker,
 };
