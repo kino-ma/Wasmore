@@ -41,7 +41,15 @@ class Container {
 
   async start() {
     const container = await this.container;
-    return container.start();
+
+    const before = performance.now();
+    const res = await container.start();
+    const after = performance.now();
+    const elapsed = after - before;
+    console.log(`[ELAPSED] start: ${elapsed} ms`);
+    this.elapsedTime.start = elapsed;
+
+    return res
   }
 
   async run(wait = true) {
