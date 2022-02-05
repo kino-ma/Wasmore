@@ -33,24 +33,32 @@ class SwitchingInvoker extends ReusableInvoker {
   }
 }
 
-const heavy = (input) => {
-  const container = heavyContainer;
-  if (!container.running) {
-    container.manualStart();
-    return callVirtualized(heavy_task, input);
-  } else {
-    return container.startAndExec({ input: parseInt(input), task: "heavy" });
+const heavyInvoker = new SwitchingInvoker(
+  {
+    cachingContainer: heavyContainer,
+    containerTask: "heavy",
+  },
+  {
+    wasmFunc: heavy_task,
   }
+);
+
+const heavy = (input) => {
+  return heavyInvoker.run(input);
 };
 
-const light = (input) => {
-  const container = lightContainer;
-  if (!container.running) {
-    container.manualStart();
-    return callVirtualized(light_task, input);
-  } else {
-    return container.startAndExec({ input: parseInt(input), task: "light" });
+const lightInvoker = new SwitchingInvoker(
+  {
+    cachingContainer: lightContainer,
+    containerTask: "light",
+  },
+  {
+    wasmFunc: light_task,
   }
+);
+
+const light = (input) => {
+  lightInvoker.run(input);
 };
 
 const container = async (input) => {
@@ -78,16 +86,11 @@ const invokeHello = async (input) => {
   return container.startAndExec({ input, task: "hello" });
 };
 
-const invokeWasmHello = async (name) => {
-  return callVirtualized(hello, name);
-};
-
 module.exports = {
   heavy,
   light,
   container,
   date,
-  invokeWasmHello,
   invokeHello,
   ReusableInvoker,
   ContainerInvoker,
