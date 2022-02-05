@@ -1,7 +1,8 @@
-const Docker = require('dockerode');
-const streams = require("../utils/stream");
+const Docker = require("dockerode");
+const streams = require("./stream");
 
 const wait = require("./wait");
+const { measure } = require("./perf");
 
 const dockerSocket = "/var/run/docker.sock";
 const docker = new Docker(dockerSocket);
@@ -10,26 +11,55 @@ class Container {
   constructor(options) {
     this._stdout = new streams.WritableStream();
 
-    this.container = docker
-      .createContainer(options)
+    this.container = docker.createContainer(options);
+
+    this.elapsedTime = {
+      start: null,
+      attach: null,
+      execCreate: null,
+      execStart: null,
+      userProgram: null,
+    };
   }
 
   async startAttaching() {
     const container = await this.container;
-    container
-      .attach({ stream: true, stdout: true, stderr: true, stream: true })
-      .then((stream) => {
-        stream.pipe(this._stdout);
-      });
-    return container.start();
+
+    const { result: stream, elapsed } = await measure("attach", () =>
+      container.attach({
+        stream: true,
+        stdout: true,
+        stderr: true,
+        stream: true,
+      })
+    );
+
+    this.elapsedTime.attach = elapsed;
+
+    stream.pipe(this._stdout);
+
+    return this.start();
   }
 
   async start() {
     const container = await this.container;
-    return container.start();
+
+    const { result: stream, elapsed } = await measure("start", () =>
+      container.start().catch((err) => {
+        if (err.statusCode === 304) {
+          console.debug("container already started. continue");
+          return;
+        }
+        return new Promise((_resolve, reject) => reject(err));
+      })
+    );
+
+    this.elapsedTime.start = elapsed;
+
+    return stream;
   }
 
-  async run(wait = true) {
+  async run() {
     await this.startAttaching();
 
     // await container.wait();
@@ -54,33 +84,41 @@ class Container {
 
     const container = await this.container;
 
-    // let before = performance.now();
-    const exe = await container.exec(options);
-    // let after = performance.now();
-    // console.log(`exec create took: ${after - before} ms`);
+    const { result: exe, elapsed: execCreateElapsed } = await measure(
+      "exec create",
+      () => container.exec(options)
+    );
 
-    // before = performance.now();
     const execStartOptions = {
       stdin: true,
-    }
-    const stream = await exe.start(execStartOptions);
-    // after = performance.now();
-    // console.log(`exec start took: ${after - before} ms`);
+    };
+    const { result: stream, elapsed: execStartElapsed } = await measure(
+      "exec start",
+      () => exe.start(execStartOptions)
+    );
 
-    // before = performance.now();
-    const closedStream = new Promise((resolve, reject) => {
-      stream.on('end', () => {
-        // after = performance.now();
-        // console.log(`stream close took: ${after - before} ms`);
-        const output = stdout.toString();
-        resolve(output)
-      })
+    const { result: closedStream, elapsed: userProgramElapsed } = await measure(
+      "user program",
+      () => {
+        const p = new Promise((resolve, reject) => {
+          stream.on("end", () => {
+            // after = performance.now();
+            // console.log(`stream close took: ${after - before} ms`);
+            const output = stdout.toString();
+            resolve(output);
+          });
 
-      stream.on('error', reject);
-    })
+          stream.on("error", reject);
+        });
+        stream._output.pipe(stdout);
+        stdin.pipe(stream);
+        return p;
+      }
+    );
 
-    stream._output.pipe(stdout);
-    stdin.pipe(stream);
+    this.elapsedTime.execCreate = execCreateElapsed;
+    this.elapsedTime.execStart = execStartElapsed;
+    this.elapsedTime.userProgram = userProgramElapsed;
 
     return closedStream;
   }
@@ -97,14 +135,15 @@ class CachingContainer extends Container {
 
     const startOptions = {
       ...defaultOptions,
-      ...customOptions
-    }
+      ...customOptions,
+    };
 
     super(startOptions);
 
     this.startOptions = startOptions;
     this.running = false;
     this.command = command;
+    this.elapsedTime.execs = [];
   }
 
   async manualStart() {
@@ -127,13 +166,19 @@ class CachingContainer extends Container {
     if (typeof input === "object") {
       input = JSON.stringify(input) + "\n";
     } else if (typeof input === "undefined") {
-      input = ""
+      input = "";
     }
-    console.log({ input })
 
     const stdin = new streams.ReadableStream(input);
 
-    return this.exec(this.command, stdin);
+    const result = await this.exec(this.command, stdin);
+    this.elapsedTime.execs.push({
+      create: this.elapsedTime.execCreate,
+      start: this.elapsedTime.execStart,
+      userProgram: this.elapsedTime.userProgram,
+    });
+
+    return result;
   }
 }
 
@@ -148,7 +193,18 @@ const lightContainer = new CachingContainer(["/root/faas_bin"]);
 const heavyContainer = new CachingContainer(["/root/faas_bin"]);
 
 const callContainer = () => {
-  return docker.run("ubuntu", ["date", "+%s"], process.stdout, { AutoRemove: true });
+  return docker.run("ubuntu", ["date", "+%s"], process.stdout, {
+    AutoRemove: true,
+  });
 };
 
-module.exports = { Container, CachingContainer, docker, callContainer, dateRunner, helloContainer, lightContainer, heavyContainer };
+module.exports = {
+  Container,
+  CachingContainer,
+  docker,
+  callContainer,
+  dateRunner,
+  helloContainer,
+  lightContainer,
+  heavyContainer,
+};
