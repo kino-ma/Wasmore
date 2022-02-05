@@ -41,12 +41,6 @@ class ReusableInvoker {
     const avg = sum / length;
     return !Number.isNaN(avg) ? avg : Infinity;
   }
-
-  setLastTime(value) {
-    const len = this.elapsedTimeHistory.length;
-    this.elapsedTimeHistory[len - 1] = value;
-    return this.elapsedTimeHistory;
-  }
 }
 
 module.exports = {

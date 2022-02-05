@@ -32,11 +32,9 @@ class SwitchingInvoker extends ReusableInvoker {
       return wasmResult;
     }
 
-    console.log("wasm", { history: this.wasmInvoker.elapsedTimeHistory });
+    console.log("wasm history", this.wasmInvoker.elapsedTimeHistory);
     const wasmElapsed = this.wasmInvoker.averageElapsedTime();
-    console.log("container", {
-      history: this.containerInvoker.elapsedTimeHistory,
-    });
+    console.log("container hisotry", this.containerInvoker.elapsedTimeHistory);
     const containerElapsed = this.containerInvoker.averageElapsedTime();
 
     console.log({ wasmElapsed, containerElapsed });
