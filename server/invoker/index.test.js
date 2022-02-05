@@ -1,13 +1,13 @@
 const { hello } = require("faas-app");
 const { VM } = require("vm2");
-const { helloContainer } = require("../utils/container");
+const { helloContainer } = require("../../utils/container");
 const {
   date,
   invokeWasmHello,
   ReusableInvoker,
   ContainerInvoker,
   WasmInvoker,
-} = require("./invoker");
+} = require(".");
 
 describe("Test Invoker", () => {
   test("Date invoker  should return date", async () => {
@@ -71,65 +71,5 @@ describe("Test ReusableInvoker class", () => {
     const avgElapsed = invoker.averageElapsedTime;
     // approximately equals to 16 with 2 significant figures
     expect(avgElapsed).toBeCloseTo(16);
-  });
-});
-
-describe("Test ContainerInvoker", () => {
-  test("ContainerInvoker can _invoke()", async () => {
-    const cachingConatiner = helloContainer;
-    const invoker = new ContainerInvoker(cachingConatiner, "hello");
-    const { result, elapsed } = await invoker._invoke();
-
-    const expectedResult = expect.stringContaining("hello");
-
-    expect(result).toEqual(expectedResult);
-    expect(elapsed).toBeGreaterThan(0);
-  });
-
-  test("ContainerInvoker can run", async () => {
-    const cachingConatiner = helloContainer;
-    const invoker = new ContainerInvoker(cachingConatiner, "hello");
-    const result = await invoker.run();
-
-    const expectedResult = expect.stringContaining("hello");
-
-    expect(result).toEqual(expectedResult);
-  });
-});
-
-describe("Test WasmInvoker", () => {
-  const name = "hoge";
-  const expectedResult = `hello, ${name}`;
-
-  test("WasmInvoker can _invoke()", async () => {
-    const func = hello;
-    const invoker = new WasmInvoker(func);
-
-    const { result, elapsed } = await invoker._invoke(name);
-
-    expect(result).toEqual(expectedResult);
-    expect(elapsed).toBeGreaterThan(0);
-  });
-
-  test("WasmInvoker can run", async () => {
-    const func = hello;
-    const invoker = new WasmInvoker(func);
-
-    const result = await invoker.run(name);
-
-    expect(result).toEqual(expectedResult);
-  });
-
-  test("WasmInvoker can reused many times", async () => {
-    const func = hello;
-    const invoker = new WasmInvoker(func);
-
-    for (let i = 0; i < 10; i += 1) {
-      const result = await invoker.run(name);
-      expect(result).toEqual(expectedResult);
-    }
-    const avgElapsed = invoker.averageElapsedTime;
-    // approximately equals to 16 with 2 significant figures
-    expect(avgElapsed).toBeGreaterThan(0);
   });
 });
