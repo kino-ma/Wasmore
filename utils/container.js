@@ -22,17 +22,16 @@ class Container {
 
   async startAttaching() {
     const container = await this.container;
-    const before = performance.now();
 
-    const stream = await container.attach({
-      stream: true,
-      stdout: true,
-      stderr: true,
-      stream: true,
-    });
-    const after = performance.now();
-    const elapsed = after - before;
-    console.log(`[ELAPSED] attach: ${elapsed} ms`);
+    const { result: stream, elapsed } = measure("attach", () =>
+      container.attach({
+        stream: true,
+        stdout: true,
+        stderr: true,
+        stream: true,
+      })
+    );
+
     this.elapsedTime.attach = elapsed;
 
     stream.pipe(this._stdout);
@@ -43,14 +42,13 @@ class Container {
   async start() {
     const container = await this.container;
 
-    const before = performance.now();
-    const res = await container.start();
-    const after = performance.now();
-    const elapsed = after - before;
-    console.log(`[ELAPSED] start: ${elapsed} ms`);
+    const { result: stream, elapsed } = measure("start", () =>
+      container.start()
+    );
+
     this.elapsedTime.start = elapsed;
 
-    return res;
+    return stream;
   }
 
   async run(wait = true) {
