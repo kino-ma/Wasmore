@@ -3,7 +3,7 @@ const measure = async (name, fn) => {
   const result = await fn();
   const after = performance.now();
   const elapsed = after - before;
-  console.log(`[ELAPSED] ${name}: ${elapsed} ms`);
+  console.debug(`[ELAPSED] ${name}: ${elapsed} ms`);
 
   return {
     result,
