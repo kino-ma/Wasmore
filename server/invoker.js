@@ -38,14 +38,10 @@ class ReusableInvoker {
 
   get averageElapsedTime() {
     const sum = this.elapsedTimeHistory.reduce(
-      ({ c, s, u }, { create, start, userProgram }) => ({
-        create: create + c,
-        start: start + s,
-        userProgram: userProgram + u,
-      })
+      (e, elapsedTime) => e + elapsedTime
     );
 
-    return sum / this.elapsedTime.execs.length;
+    return sum / this.elapsedTimeHistory.length;
   }
 }
 
@@ -130,4 +126,5 @@ module.exports = {
   date,
   invokeWasmHello,
   invokeHello,
+  ReusableInvoker,
 };
