@@ -26,9 +26,9 @@ class SwitchingInvoker extends ReusableInvoker {
     const container = this.containerInvoker.container;
     if (!container.running) {
       container.manualStart();
-      return this.wasmInvoker.run(input);
+      return this.wasmInvoker._invoke(input);
     } else {
-      return this.containerInvoker.run(input);
+      return this.containerInvoker._invoke(input);
     }
   }
 }
@@ -92,4 +92,5 @@ module.exports = {
   ReusableInvoker,
   ContainerInvoker,
   WasmInvoker,
+  SwitchingInvoker,
 };
