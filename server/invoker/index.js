@@ -26,9 +26,15 @@ class SwitchingInvoker extends ReusableInvoker {
     const container = this.containerInvoker.container;
     if (!container.running) {
       container.manualStart();
-      return this.wasmInvoker._invoke(input);
+    }
+
+    const wasmElapsed = this.wasmInvoker.averageElapsedTime;
+    const containerElapsed = this.containerInvoker.averageElapsedTime;
+
+    if (wasmElapsed <= containerElapsed) {
+      return await this.wasmInvoker._invoke(input);
     } else {
-      return this.containerInvoker._invoke(input);
+      return await this.containerInvoker._invoke(input);
     }
   }
 }
@@ -58,7 +64,7 @@ const lightInvoker = new SwitchingInvoker(
 );
 
 const light = (input) => {
-  lightInvoker.run(input);
+  return lightInvoker.run(input);
 };
 
 const container = async (input) => {
