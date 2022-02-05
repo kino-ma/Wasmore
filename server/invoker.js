@@ -9,6 +9,7 @@ const {
   lightContainer,
   heavyContainer,
 } = require("../utils/container");
+const { measure } = require("../utils/perf");
 
 // Abstract class/interface. Subclasses must implement `constructor()` and `_invoke()`.
 class ReusableInvoker {
@@ -60,6 +61,30 @@ class ContainerInvoker extends ReusableInvoker {
     const elapsed = this.container.elapsedTime.userProgram;
 
     return { result, elapsed };
+  }
+}
+
+class WasmInvoker extends ReusableInvoker {
+  constructor(func) {
+    super();
+    this.func = func;
+  }
+
+  async _invoke(input) {
+    const globalObject = {
+      func: this.func,
+      arg: input,
+    };
+
+    const vm = new VM({
+      sandbox: globalObject,
+    });
+
+    const { elapsed, result } = await measure("wasm", async () =>
+      vm.run("func(arg)")
+    );
+
+    return { elapsed, result };
   }
 }
 
@@ -134,4 +159,5 @@ module.exports = {
   invokeHello,
   ReusableInvoker,
   ContainerInvoker,
+  WasmInvoker,
 };
