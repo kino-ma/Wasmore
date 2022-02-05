@@ -54,9 +54,10 @@ $(WASM_BIND): faas-app/src/lib.rs
 test: test-js test-rs
 	@echo OK
 
-test-js: clean-container
+test-js:
+	@$(MAKE) clean-container &>/dev/null
 	yarn test
-	$(MAKE) clean-container
+	@$(MAKE) clean-container &>/dev/null
 
 test-rs: rust-container
 	$(CARGO) test
