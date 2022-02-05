@@ -39,7 +39,7 @@ rust-container:
 	$(DOCKER_RUST_START)
 
 bin-runner: $(NATIVE_BUILD)
-	docker build -t $(DOCKER_BIN_NAME) --no-cache .
+	docker build -t $(DOCKER_BIN_NAME):latest --no-cache .
 
 bin: $(NATIVE_BUILD)
 
