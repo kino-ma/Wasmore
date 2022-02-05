@@ -11,17 +11,32 @@ class Container {
     this._stdout = new streams.WritableStream();
 
     this.container = docker
-      .createContainer(options)
+      .createontainer(options)
+
+    this.elapsedTime = {
+      start: null,
+      attach: null,
+      exec: null,
+      userProgram: null,
+    }
   }
 
   async startAttaching() {
     const container = await this.container;
+    const before = performance.now();
+
     container
       .attach({ stream: true, stdout: true, stderr: true, stream: true })
       .then((stream) => {
+        const after = performance.now();
+        const elapsed = after - before;
+        console.log(`[ELAPSED] attach: ${elapsed} ms`);
+        this.elapsedTime.attach = elapsed;
+
         stream.pipe(this._stdout);
       });
-    return container.start();
+
+    return this.start();
   }
 
   async start() {
