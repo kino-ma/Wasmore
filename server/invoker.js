@@ -49,6 +49,18 @@ class ReusableInvoker {
   }
 }
 
+class ContainerInvoker extends ReusableInvoker {
+  constructor(cachingContainer, task) {
+    super();
+    this.container = cachingContainer;
+    this.task = task;
+  }
+
+  async invoke(input) {
+    return container.startAndExec({ input: parseInt(input), task: this.task });
+  }
+}
+
 const callVirtualized = (func, arg) => {
   const globalObject = {
     func,
