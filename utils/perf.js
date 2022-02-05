@@ -12,3 +12,5 @@ const measure = async (name, fn) => {
     elapsed,
   };
 };
+
+module.exports = { measure };

@@ -2,6 +2,7 @@ const Docker = require("dockerode");
 const streams = require("./stream");
 
 const wait = require("./wait");
+const { measure } = require("./perf");
 
 const dockerSocket = "/var/run/docker.sock";
 const docker = new Docker(dockerSocket);
@@ -15,7 +16,8 @@ class Container {
     this.elapsedTime = {
       start: null,
       attach: null,
-      exec: null,
+      execCreate: null,
+      execStart: null,
       userProgram: null,
     };
   }
@@ -23,7 +25,7 @@ class Container {
   async startAttaching() {
     const container = await this.container;
 
-    const { result: stream, elapsed } = measure("attach", () =>
+    const { result: stream, elapsed } = await measure("attach", () =>
       container.attach({
         stream: true,
         stdout: true,
@@ -42,7 +44,7 @@ class Container {
   async start() {
     const container = await this.container;
 
-    const { result: stream, elapsed } = measure("start", () =>
+    const { result: stream, elapsed } = await measure("start", () =>
       container.start()
     );
 
@@ -76,33 +78,41 @@ class Container {
 
     const container = await this.container;
 
-    // let before = performance.now();
-    const exe = await container.exec(options);
-    // let after = performance.now();
-    // console.log(`exec create took: ${after - before} ms`);
+    const { result: exe, elapsed: execCreateElapsed } = await measure(
+      "exec create",
+      () => container.exec(options)
+    );
 
-    // before = performance.now();
     const execStartOptions = {
       stdin: true,
     };
-    const stream = await exe.start(execStartOptions);
-    // after = performance.now();
-    // console.log(`exec start took: ${after - before} ms`);
+    const { result: stream, elapsed: execStartElapsed } = await measure(
+      "exec start",
+      () => exe.start(execStartOptions)
+    );
 
-    // before = performance.now();
-    const closedStream = new Promise((resolve, reject) => {
-      stream.on("end", () => {
-        // after = performance.now();
-        // console.log(`stream close took: ${after - before} ms`);
-        const output = stdout.toString();
-        resolve(output);
-      });
+    const { result: closedStream, elapsed: userProgramElapsed } = await measure(
+      "user program",
+      () => {
+        const p = new Promise((resolve, reject) => {
+          stream.on("end", () => {
+            // after = performance.now();
+            // console.log(`stream close took: ${after - before} ms`);
+            const output = stdout.toString();
+            resolve(output);
+          });
 
-      stream.on("error", reject);
-    });
+          stream.on("error", reject);
+        });
+        stream._output.pipe(stdout);
+        stdin.pipe(stream);
+        return p;
+      }
+    );
 
-    stream._output.pipe(stdout);
-    stdin.pipe(stream);
+    this.elapsedTime.execCreate = execCreateElapsed;
+    this.elapsedTime.execStart = execStartElapsed;
+    this.elapsedTime.userProgram = userProgramElapsed;
 
     return closedStream;
   }
