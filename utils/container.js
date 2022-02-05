@@ -51,7 +51,7 @@ class Container {
     return stream;
   }
 
-  async run(wait = true) {
+  async run() {
     await this.startAttaching();
 
     // await container.wait();
