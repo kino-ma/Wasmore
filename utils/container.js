@@ -25,16 +25,14 @@ class Container {
     const container = await this.container;
     const before = performance.now();
 
-    container
-      .attach({ stream: true, stdout: true, stderr: true, stream: true })
-      .then((stream) => {
-        const after = performance.now();
-        const elapsed = after - before;
-        console.log(`[ELAPSED] attach: ${elapsed} ms`);
-        this.elapsedTime.attach = elapsed;
+    const stream = await container
+      .attach({ stream: true, stdout: true, stderr: true, stream: true });
+    const after = performance.now();
+    const elapsed = after - before;
+    console.log(`[ELAPSED] attach: ${elapsed} ms`);
+    this.elapsedTime.attach = elapsed;
 
-        stream.pipe(this._stdout);
-      });
+    stream.pipe(this._stdout);
 
     return this.start();
   }
