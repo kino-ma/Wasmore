@@ -137,6 +137,7 @@ class CachingContainer extends Container {
     this.startOptions = startOptions;
     this.running = false;
     this.command = command;
+    this.elapsedTime.execs = [];
   }
 
   async manualStart() {
@@ -165,7 +166,14 @@ class CachingContainer extends Container {
 
     const stdin = new streams.ReadableStream(input);
 
-    return this.exec(this.command, stdin);
+    const result = await this.exec(this.command, stdin);
+    this.elapsedTime.execs.push({
+      create: this.elapsedTime.execCreate,
+      start: this.elapsedTime.execStart,
+      userProgram: this.elapsedTime.userProgram,
+    });
+
+    return result;
   }
 }
 
