@@ -25,11 +25,17 @@ class ReusableInvoker {
   }
 
   get averageElapsedTime() {
+    const length = this.elapsedTimeHistory.length;
+
+    if (length <= 0) {
+      return Infinity;
+    }
+
     const sum = this.elapsedTimeHistory.reduce(
       (e, elapsedTime) => e + elapsedTime
     );
 
-    return sum / this.elapsedTimeHistory.length;
+    return sum / length;
   }
 }
 
