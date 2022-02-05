@@ -168,7 +168,6 @@ class CachingContainer extends Container {
     } else if (typeof input === "undefined") {
       input = "";
     }
-    console.log({ input });
 
     const stdin = new streams.ReadableStream(input);
 
