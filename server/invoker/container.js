@@ -1,3 +1,4 @@
+const { measure } = require("../../utils/perf");
 const { ReusableInvoker } = require("./invoker");
 
 class ContainerInvoker extends ReusableInvoker {
@@ -8,11 +9,12 @@ class ContainerInvoker extends ReusableInvoker {
   }
 
   async _invoke(input) {
-    const result = await this.container.startAndExec({
-      input: parseInt(input),
-      task: this.task,
-    });
-    const elapsed = this.container.elapsedTime.userProgram;
+    const { result, elapsed } = await measure("exec overall", () =>
+      this.container.startAndExec({
+        input: parseInt(input),
+        task: this.task,
+      })
+    );
 
     return { result, elapsed };
   }
