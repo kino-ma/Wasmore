@@ -11,7 +11,7 @@ class Container {
     this._stdout = new streams.WritableStream();
 
     this.container = docker
-      .createontainer(options)
+      .createContainer(options)
 
     this.elapsedTime = {
       start: null,
