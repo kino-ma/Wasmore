@@ -11,4 +11,4 @@ const measure = async (name, fn) => {
     after,
     elapsed,
   };
-}
+};
