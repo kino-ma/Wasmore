@@ -52,8 +52,14 @@ class ContainerInvoker extends ReusableInvoker {
     this.task = task;
   }
 
-  async invoke(input) {
-    return container.startAndExec({ input: parseInt(input), task: this.task });
+  async _invoke(input) {
+    const result = await container.startAndExec({
+      input: parseInt(input),
+      task: this.task,
+    });
+    const elapsed = container.elapsedTime.userProgram;
+
+    return { result, elapsed };
   }
 }
 

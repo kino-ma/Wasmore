@@ -175,18 +175,6 @@ class CachingContainer extends Container {
 
     return result;
   }
-
-  get averageElapsedTime() {
-    const sum = this.elapsedTime.execs.reduce(
-      ({ c, s, u }, { create, start, userProgram }) => ({
-        create: create + c,
-        start: start + s,
-        userProgram: userProgram + u,
-      })
-    );
-
-    return sum / this.elapsedTime.execs.length;
-  }
 }
 
 const containers = {
