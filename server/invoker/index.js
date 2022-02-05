@@ -24,17 +24,28 @@ class SwitchingInvoker extends ReusableInvoker {
 
   async _invoke(input) {
     const container = this.containerInvoker.container;
+
+    // Run both on first call
     if (!container.running) {
       container.manualStart();
+      // const containerRun = this.containerInvoker._invoke(input);
+      // const wasmRun = this.wasmInvoker._invoke(input);
+      // return Promise.any([containerRun, wasmRun]);
     }
 
-    const wasmElapsed = this.wasmInvoker.averageElapsedTime;
-    const containerElapsed = this.containerInvoker.averageElapsedTime;
+    console.log("wasm", { history: this.wasmInvoker.elapsedTimeHistory });
+    const wasmElapsed = this.wasmInvoker.averageElapsedTime();
+    console.log("container", {
+      history: this.containerInvoker.elapsedTimeHistory,
+    });
+    const containerElapsed = this.containerInvoker.averageElapsedTime();
+
+    console.log({ wasmElapsed, containerElapsed });
 
     if (wasmElapsed <= containerElapsed) {
-      return await this.wasmInvoker._invoke(input);
+      return await this.wasmInvoker.run(input);
     } else {
-      return await this.containerInvoker._invoke(input);
+      return await this.containerInvoker.run(input);
     }
   }
 }

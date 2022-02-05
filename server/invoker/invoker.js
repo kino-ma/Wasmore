@@ -1,3 +1,5 @@
+const { measure } = require("../../utils/perf");
+
 // Abstract class/interface. Subclasses must implement `constructor()` and `_invoke()`.
 class ReusableInvoker {
   constructor() {
@@ -11,7 +13,7 @@ class ReusableInvoker {
   }
 
   // Required method to implement this abstract class
-  // Must return { elapsed, result }
+  // returns result
   async _invoke(_input) {
     throw new TypeError("You must implement `async _invoke()`");
   }
@@ -19,23 +21,25 @@ class ReusableInvoker {
   // --- Provided methods ---
 
   async run(input) {
-    const { elapsed, result } = await this._invoke(input);
+    const { result, elapsed } = await measure("invoker exec", () =>
+      this._invoke(input)
+    );
     this.elapsedTimeHistory.push(elapsed);
+    console.log({ history: this.elapsedTimeHistory });
     return result;
   }
 
-  get averageElapsedTime() {
+  averageElapsedTime() {
     const length = this.elapsedTimeHistory.length;
 
-    if (length <= 0) {
-      return Infinity;
-    }
-
     const sum = this.elapsedTimeHistory.reduce(
-      (e, elapsedTime) => e + elapsedTime
+      (e, elapsedTime) => e + elapsedTime,
+      0
     );
+    console.log({ sum, length });
 
-    return sum / length;
+    const avg = sum / length;
+    return !Number.isNaN(avg) ? avg : Infinity;
   }
 }
 

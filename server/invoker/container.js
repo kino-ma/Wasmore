@@ -9,14 +9,10 @@ class ContainerInvoker extends ReusableInvoker {
   }
 
   async _invoke(input) {
-    const { result, elapsed } = await measure("exec overall", () =>
-      this.container.startAndExec({
-        input: parseInt(input),
-        task: this.task,
-      })
-    );
-
-    return { result, elapsed };
+    return this.container.startAndExec({
+      input: parseInt(input),
+      task: this.task,
+    });
   }
 }
 

@@ -19,11 +19,7 @@ class WasmInvoker extends ReusableInvoker {
       sandbox: globalObject,
     });
 
-    const { elapsed, result } = await measure("wasm", async () =>
-      vm.run("func(arg)")
-    );
-
-    return { elapsed, result };
+    return await vm.run("func(arg)");
   }
 }
 

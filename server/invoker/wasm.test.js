@@ -45,7 +45,7 @@ describe("Test WasmInvoker", () => {
       const result = await invoker.run(name);
       expect(result).toEqual(expectedResult);
     }
-    const avgElapsed = invoker.averageElapsedTime;
+    const avgElapsed = invoker.averageElapsedTime();
     // approximately equals to 16 with 2 significant figures
     expect(avgElapsed).toBeGreaterThan(0);
   });
