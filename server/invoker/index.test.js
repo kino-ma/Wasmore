@@ -7,6 +7,7 @@ const {
   ReusableInvoker,
   ContainerInvoker,
   WasmInvoker,
+  SwitchingInvoker,
 } = require(".");
 
 describe("Test Invoker", () => {
@@ -71,5 +72,40 @@ describe("Test ReusableInvoker class", () => {
     const avgElapsed = invoker.averageElapsedTime;
     // approximately equals to 16 with 2 significant figures
     expect(avgElapsed).toBeCloseTo(16);
+  });
+});
+
+describe("Test SwitchingInvoker", () => {
+  const name = "hoge";
+  const expectedResult = expect.stringContaining(`hello, ${name}`);
+  const cachingContainer = helloContainer;
+  const invoker = new SwitchingInvoker(
+    { cachingContainer, containerTask: "hello" },
+    { wasmFunc: hello }
+  );
+
+  test("SwitchingInvoker can _invoke()", async () => {
+    const { result, elapsed } = await invoker._invoke(name);
+
+    expect(result).toEqual(expectedResult);
+    expect(elapsed).toBeGreaterThan(0);
+  });
+
+  test("SwitchingInvoker can run", async () => {
+    const result = await invoker.run(name);
+
+    expect(result).toEqual(expectedResult);
+  });
+
+  test("WasmInvoker can reused many times", async () => {
+    const func = hello;
+    const invoker = new WasmInvoker(func);
+
+    for (let i = 0; i < 10; i += 1) {
+      const result = await invoker.run(name);
+      expect(result).toEqual(expectedResult);
+    }
+    const avgElapsed = invoker.averageElapsedTime;
+    expect(avgElapsed).toBeGreaterThan(0);
   });
 });
