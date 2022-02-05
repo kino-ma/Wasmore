@@ -1,7 +1,5 @@
 const { ReusableInvoker } = require("./invoker");
 
-console.info(require("./invoker"));
-
 class ContainerInvoker extends ReusableInvoker {
   constructor(cachingContainer, task) {
     super();
