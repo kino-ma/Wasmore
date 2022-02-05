@@ -1,5 +1,11 @@
 const { VM } = require("vm2");
-const { date, invokeWasmHello, ReusableInvoker } = require("./invoker");
+const { helloContainer } = require("../utils/container");
+const {
+  date,
+  invokeWasmHello,
+  ReusableInvoker,
+  ContainerInvoker,
+} = require("./invoker");
 
 describe("Test Invoker", () => {
   test("Date invoker  should return date", async () => {
@@ -63,5 +69,28 @@ describe("Test ReusableInvoker class", () => {
     const avgElapsed = invoker.averageElapsedTime;
     // approximately equals to 16 with 2 significant figures
     expect(avgElapsed).toBeCloseTo(16);
+  });
+});
+
+describe("Test ContainerInvoker", () => {
+  test("ContainerInvoker can _invoke()", async () => {
+    const cachingConatiner = helloContainer;
+    const invoker = new ContainerInvoker(cachingConatiner, "hello");
+    const { result, elapsed } = await invoker._invoke();
+
+    const expectedResult = expect.stringContaining("hello");
+
+    expect(result).toEqual(expectedResult);
+    expect(elapsed).toBeGreaterThan(0);
+  });
+
+  test("ContainerInvoker can run", async () => {
+    const cachingConatiner = helloContainer;
+    const invoker = new ContainerInvoker(cachingConatiner, "hello");
+    const result = await invoker.run();
+
+    const expectedResult = expect.stringContaining("hello");
+
+    expect(result).toEqual(expectedResult);
   });
 });
