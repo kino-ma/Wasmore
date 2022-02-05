@@ -45,7 +45,13 @@ class Container {
     const container = await this.container;
 
     const { result: stream, elapsed } = await measure("start", () =>
-      container.start()
+      container.start().catch((err) => {
+        if (err.statusCode === 304) {
+          console.debug("container already started. continue");
+          return;
+        }
+        return new Promise((_resolve, reject) => reject(err));
+      })
     );
 
     this.elapsedTime.start = elapsed;
