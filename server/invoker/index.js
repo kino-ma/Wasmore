@@ -1,7 +1,5 @@
-const streams = require("memory-streams");
-const { VM } = require("vm2");
-
 const { hello, heavy_task, light_task } = require("faas-app");
+
 const {
   callContainer,
   dateRunner,
@@ -9,23 +7,31 @@ const {
   lightContainer,
   heavyContainer,
 } = require("../../utils/container");
-
 const { ReusableInvoker } = require("./invoker");
 const { ContainerInvoker } = require("./container");
 const { WasmInvoker } = require("./wasm");
 
-const callVirtualized = (func, arg) => {
-  const globalObject = {
-    func,
-    arg,
-  };
+class SwitchingInvoker extends ReusableInvoker {
+  constructor({ cachingContainer, containerTask }, { wasmFunc }) {
+    super();
 
-  const vm = new VM({
-    sandbox: globalObject,
-  });
+    this.containerInvoker = new ContainerInvoker(
+      cachingContainer,
+      containerTask
+    );
+    this.wasmInvoker = new WasmInvoker(wasmFunc);
+  }
 
-  return vm.run("func(arg)");
-};
+  async _invoke(input) {
+    const container = this.containerInvoker.container;
+    if (!container.running) {
+      container.manualStart();
+      return this.wasmInvoker.run(input);
+    } else {
+      return this.containerInvoker.run(input);
+    }
+  }
+}
 
 const heavy = (input) => {
   const container = heavyContainer;
