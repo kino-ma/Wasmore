@@ -27,10 +27,9 @@ class SwitchingInvoker extends ReusableInvoker {
 
     // Run both on first call
     if (!container.running) {
-      const containerRun = this.containerInvoker.run(input);
-      const wasmRun = this.wasmInvoker.run(input);
-      // FIXME: wasm is always fater because it blocks
-      return Promise.any([containerRun, wasmRun]);
+      const wasmResult = await this.wasmInvoker.run(input);
+      const _containerDryRun = this.containerInvoker.run(input);
+      return wasmResult;
     }
 
     console.log("wasm", { history: this.wasmInvoker.elapsedTimeHistory });

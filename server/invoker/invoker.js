@@ -26,7 +26,7 @@ class ReusableInvoker {
     );
     this.elapsedTimeHistory.push(elapsed);
     console.log({ history: this.elapsedTimeHistory });
-    return result;
+    return { result, elapsed };
   }
 
   averageElapsedTime() {
@@ -40,6 +40,12 @@ class ReusableInvoker {
 
     const avg = sum / length;
     return !Number.isNaN(avg) ? avg : Infinity;
+  }
+
+  setLastTime(value) {
+    const len = this.elapsedTimeHistory.length;
+    this.elapsedTimeHistory[len - 1] = value;
+    return this.elapsedTimeHistory;
   }
 }
 
