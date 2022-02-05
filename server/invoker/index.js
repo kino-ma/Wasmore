@@ -1,5 +1,5 @@
 const { hello, heavy_task, light_task } = require("faas-app");
-
+// TODO?: now invoker returns Object, and tests will fail
 const {
   callContainer,
   dateRunner,
@@ -27,9 +27,9 @@ class SwitchingInvoker extends ReusableInvoker {
 
     // Run both on first call
     if (!container.running) {
-      const wasmResult = await this.wasmInvoker.run(input);
+      const { result } = await this.wasmInvoker.run(input);
       const _containerDryRun = this.containerInvoker.run(input);
-      return wasmResult;
+      return result;
     }
 
     console.log("wasm history", this.wasmInvoker.elapsedTimeHistory);
