@@ -3,7 +3,7 @@ const { helloContainer } = require("../../utils/container");
 
 describe("Test ContainerInvoker", () => {
   const name = "hoge";
-  const expectedResult = `hello, ${name}`;
+  const expectedResult = expect.stringContaining(`hello, ${name}`);
 
   test("ContainerInvoker can _invoke()", async () => {
     const cachingConatiner = helloContainer;
