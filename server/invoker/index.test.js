@@ -32,21 +32,21 @@ describe("Test SwitchingInvoker", () => {
   );
 
   test("SwitchingInvoker can _invoke()", async () => {
-    const { result, elapsed } = await invoker._invoke(name);
+    const result = await invoker._invoke(name);
+
+    expect(result).toEqual(expectedResult);
+  });
+
+  test("SwitchingInvoker can run", async () => {
+    const { result, elapsed } = await invoker.run(name);
 
     expect(result).toEqual(expectedResult);
     expect(elapsed).toBeGreaterThan(0);
   });
 
-  test("SwitchingInvoker can run", async () => {
-    const result = await invoker.run(name);
-
-    expect(result).toEqual(expectedResult);
-  });
-
   test("SwitchingInvoker can reused many times", async () => {
     for (let i = 0; i < 10; i += 1) {
-      const result = await invoker.run(name);
+      const { result } = await invoker.run(name);
       expect(result).toEqual(expectedResult);
     }
     const avgElapsed = invoker.averageElapsedTime();

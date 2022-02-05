@@ -22,19 +22,19 @@ describe("Test WasmInvoker", () => {
     const func = hello;
     const invoker = new WasmInvoker(func);
 
-    const { result, elapsed } = await invoker._invoke(name);
+    const result = await invoker._invoke(name);
 
     expect(result).toEqual(expectedResult);
-    expect(elapsed).toBeGreaterThan(0);
   });
 
   test("WasmInvoker can run", async () => {
     const func = hello;
     const invoker = new WasmInvoker(func);
 
-    const result = await invoker.run(name);
+    const { result, elapsed } = await invoker.run(name);
 
     expect(result).toEqual(expectedResult);
+    expect(elapsed).toBeGreaterThan(0);
   });
 
   test("WasmInvoker can reused many times", async () => {
@@ -42,7 +42,7 @@ describe("Test WasmInvoker", () => {
     const invoker = new WasmInvoker(func);
 
     for (let i = 0; i < 10; i += 1) {
-      const result = await invoker.run(name);
+      const { result } = await invoker.run(name);
       expect(result).toEqual(expectedResult);
     }
     const avgElapsed = invoker.averageElapsedTime();
