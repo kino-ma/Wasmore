@@ -1,4 +1,4 @@
-const { expose } = "threads";
+const { expose } = require("threads/worker");
 const { VM } = require("vm2");
 
 const wasm = require("faas-app");

@@ -1,4 +1,4 @@
-const { expose } = "threads";
+const { expose } = require("threads/worker");
 
 const { CachingContainer } = require("../../../utils/container");
 
