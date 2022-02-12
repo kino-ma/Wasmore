@@ -11,8 +11,6 @@ const { ReusableInvoker } = require("./invoker");
 const { ContainerInvoker } = require("./container");
 const { WasmInvoker } = require("./wasm");
 
-const defaultName = "default";
-
 class SwitchingInvoker extends ReusableInvoker {
   constructor({ containerTask }, { wasmFuncName }) {
     super();
@@ -67,7 +65,7 @@ const heavyInvoker = new SwitchingInvoker(
     containerTask: "heavy",
   },
   {
-    wasmFunc: "heavy_task",
+    wasmFuncName: "heavy_task",
   }
 );
 
