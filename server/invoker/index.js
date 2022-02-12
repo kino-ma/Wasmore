@@ -35,7 +35,9 @@ class SwitchingInvoker extends ReusableInvoker {
     if (containerIsRunning) {
       const wasmRun = this.wasmInvoker.run(input);
       const containerRun = this.containerInvoker.run(input);
-      return Promise.any([wasmRun, containerRun]);
+
+      const { result } = await Promise.any([wasmRun, containerRun]);
+      return result;
     }
 
     console.log("wasm history", this.wasmInvoker.elapsedTimeHistory);
@@ -46,9 +48,11 @@ class SwitchingInvoker extends ReusableInvoker {
     console.log({ wasmElapsed, containerElapsed });
 
     if (wasmElapsed <= containerElapsed) {
-      return await this.wasmInvoker.run(input);
+      let { result } = await this.wasmInvoker.run(input);
+      return result;
     } else {
-      return await this.containerInvoker.run(input);
+      let { result } = await this.containerInvoker.run(input);
+      return result;
     }
   }
 }
