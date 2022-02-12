@@ -27,7 +27,6 @@ class ContainerInvoker extends ReusableInvoker {
     if (this.worker === null) {
       throw new Error("Worker is not initialized yet.");
     }
-    console.info({ task: this.task, input });
 
     return this.worker.run(this.task, input);
   }

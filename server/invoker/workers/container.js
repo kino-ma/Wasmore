@@ -17,7 +17,6 @@ expose({
       input: isIntTask ? parseInt(input) : input,
       task: task,
     });
-    console.log({ runRes: res });
     return res;
   },
 

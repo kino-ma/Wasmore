@@ -102,8 +102,6 @@ class Container {
       () => {
         const p = new Promise((resolve, reject) => {
           stream.on("end", () => {
-            // after = performance.now();
-            // console.log(`stream close took: ${after - before} ms`);
             const output = stdout.toString();
             resolve(output);
           });
