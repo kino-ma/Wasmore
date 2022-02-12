@@ -16,20 +16,18 @@ const { WasmInvoker } = require("./wasm");
 const defaultName = "default";
 
 class SwitchingInvoker extends ReusableInvoker {
-  constructor({ cachingContainer, containerTask }, { wasmFunc }) {
+  constructor({ containerTask }, { wasmFuncName }) {
     super();
 
-    [this.containerWorker, this.wasmWorker] = await Promise.all([
-      spawn(new Worker("./container")),
-      spawn(new Worker("./wasm")),
-    ]);
+    this.containerInvoker = new ContainerInvoker(containerTask);
+    this.wasmInvoker = new WasmInvoker(wasmFuncName);
+  }
 
-    this.containerWorker.addContainer(
-      defaultName,
-      cachingContainer,
-      containerTask
-    );
-    this.wasmWorker.addModule(defaultName, wasmFunc);
+  async _init() {
+    await Promise.all([
+      this.containerInvoker.setup(),
+      this.wasmInvoker.setup(),
+    ]);
   }
 
   async _invoke(input) {
@@ -59,11 +57,10 @@ class SwitchingInvoker extends ReusableInvoker {
 
 const heavyInvoker = new SwitchingInvoker(
   {
-    cachingContainer: heavyContainer,
     containerTask: "heavy",
   },
   {
-    wasmFunc: heavy_task,
+    wasmFunc: "heavy_task",
   }
 );
 
@@ -73,11 +70,10 @@ const heavy = (input) => {
 
 const lightInvoker = new SwitchingInvoker(
   {
-    cachingContainer: lightContainer,
     containerTask: "light",
   },
   {
-    wasmFunc: light_task,
+    wasmFuncName: "light_task",
   }
 );
 
