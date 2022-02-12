@@ -2,18 +2,6 @@ const { WasmInvoker } = require("./wasm");
 
 const hello = "hello";
 
-describe("Test WebASsembly itself", () => {
-  test("wasm hello returns correct value", async () => {
-    const name = "kino-ma";
-    const output = hello(name);
-    expect(output).toBe(`hello, ${name}`);
-
-    const name2 = "makino";
-    const output2 = await hello(name2 + "dayo");
-    expect(output2).not.toBe(`hello, ${name2}`);
-  });
-});
-
 describe("Test WasmInvoker", () => {
   const name = "hoge";
   const expectedResult = `hello, ${name}`;
