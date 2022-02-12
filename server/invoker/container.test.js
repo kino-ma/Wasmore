@@ -7,7 +7,7 @@ describe("Test ContainerInvoker", () => {
 
   test("ContainerInvoker can _invoke()", async () => {
     const cachingConatiner = helloContainer;
-    const invoker = new ContainerInvoker(cachingConatiner, "hello");
+    const invoker = new ContainerInvoker("hello");
     await invoker.setup();
     const result = await invoker._invoke(name);
 
@@ -15,8 +15,7 @@ describe("Test ContainerInvoker", () => {
   });
 
   test("ContainerInvoker can run", async () => {
-    const cachingConatiner = helloContainer;
-    const invoker = new ContainerInvoker(cachingConatiner, "hello");
+    const invoker = new ContainerInvoker("hello");
     invoker.setup();
     const { result, elapsed } = await invoker.run(name);
 

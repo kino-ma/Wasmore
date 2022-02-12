@@ -6,8 +6,6 @@ const {
   callContainer,
   dateRunner,
   helloContainer,
-  lightContainer,
-  heavyContainer,
 } = require("../../utils/container");
 const { ReusableInvoker } = require("./invoker");
 const { ContainerInvoker } = require("./container");
