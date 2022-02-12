@@ -12,6 +12,7 @@ class ContainerInvoker extends ReusableInvoker {
 
   async _spawn(path = "./workers/container") {
     this.worker = await spawn(new Worker(path));
+    await this.worker.init(["/root/faas_bin"]);
   }
 
   async _init() {
