@@ -1,6 +1,5 @@
-const { VM } = require("vm2");
-
 const { ReusableInvoker } = require("./invoker");
+const { spawn, Worker } = require("threads");
 
 class WasmInvoker extends ReusableInvoker {
   constructor(funcName) {
