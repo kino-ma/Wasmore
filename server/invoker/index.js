@@ -28,6 +28,11 @@ class SwitchingInvoker extends ReusableInvoker {
     ]);
   }
 
+  async _fin() {
+    await this.containerInvoker._fin();
+    await this.wasmInvoker._fin();
+  }
+
   async _invoke(input) {
     const containerIsRunning = this.containerInvoker.isRunning();
 

@@ -31,6 +31,10 @@ describe("Test SwitchingInvoker", () => {
     { wasmFuncName: "hello" }
   );
 
+  afterAll(() => {
+    invoker._fin();
+  });
+
   test("SwitchingInvoker can _invoke()", async () => {
     await invoker.setup();
     const result = await invoker._invoke(name);

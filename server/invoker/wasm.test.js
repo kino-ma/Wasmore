@@ -14,6 +14,8 @@ describe("Test WasmInvoker", () => {
     const result = await invoker._invoke(name);
 
     expect(result).toEqual(expectedResult);
+
+    invoker._fin();
   });
 
   test("WasmInvoker can run", async () => {
@@ -25,6 +27,8 @@ describe("Test WasmInvoker", () => {
 
     expect(result).toEqual(expectedResult);
     expect(elapsed).toBeGreaterThan(0);
+
+    invoker._fin();
   });
 
   test("WasmInvoker can reused many times", async () => {
@@ -38,5 +42,7 @@ describe("Test WasmInvoker", () => {
     const avgElapsed = invoker.averageElapsedTime();
     // approximately equals to 16 with 2 significant figures
     expect(avgElapsed).toBeGreaterThan(0);
+
+    invoker._fin();
   });
 });

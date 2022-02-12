@@ -12,6 +12,8 @@ describe("Test ContainerInvoker", () => {
     const result = await invoker._invoke(name);
 
     expect(result).toEqual(expectedResult);
+
+    invoker._fin();
   });
 
   test("ContainerInvoker can run", async () => {
@@ -23,5 +25,7 @@ describe("Test ContainerInvoker", () => {
 
     expect(result).toEqual(expectedResult);
     expect(elapsed).toBeGreaterThan(0);
+
+    invoker._fin();
   });
 });
