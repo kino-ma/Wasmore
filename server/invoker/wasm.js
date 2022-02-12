@@ -1,5 +1,5 @@
 const { ReusableInvoker } = require("./invoker");
-const { spawn, Worker } = require("threads");
+const { spawn, Thread, Worker } = require("threads");
 
 class WasmInvoker extends ReusableInvoker {
   constructor(funcName) {
@@ -15,6 +15,10 @@ class WasmInvoker extends ReusableInvoker {
 
   async _init() {
     await this._spawn();
+  }
+
+  async _fin() {
+    await Thread.terminate(this.worker);
   }
 
   async _invoke(input) {

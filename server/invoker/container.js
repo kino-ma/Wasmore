@@ -1,4 +1,4 @@
-const { spawn, Worker } = require("threads");
+const { spawn, Thread, Worker } = require("threads");
 
 const { ReusableInvoker } = require("./invoker");
 
@@ -17,6 +17,10 @@ class ContainerInvoker extends ReusableInvoker {
 
   async _init() {
     await this._spawn();
+  }
+
+  async _fin() {
+    await Thread.terminate(this.worker);
   }
 
   async _invoke(input) {
