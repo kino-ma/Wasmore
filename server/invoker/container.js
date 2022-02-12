@@ -1,23 +1,26 @@
-const { expose } = "threads/worker";
+const { spawn, Worker } = require("threads");
 
-const { measure } = require("../../utils/perf");
 const { ReusableInvoker } = require("./invoker");
 
-const intTasks = ["light", "heavy"];
-
 class ContainerInvoker extends ReusableInvoker {
-  constructor(cachingContainer, task) {
+  constructor(task) {
     super();
-    this.container = cachingContainer;
+
+    this._spawn();
+    this.worker = null;
     this.task = task;
-    this.isIntTask = intTasks.includes(task);
+  }
+
+  async _spawn(path = "./workers/container") {
+    this.worker = spawn(new Worker(path));
   }
 
   async _invoke(input) {
-    return this.container.startAndExec({
-      input: this.isIntTask ? parseInt(input) : input,
-      task: this.task,
-    });
+    if (this.worker === null) {
+      throw new Error("Worker is not initialized yet.");
+    }
+
+    return this.worker.run(input);
   }
 }
 
