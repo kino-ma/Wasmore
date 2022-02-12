@@ -1,3 +1,5 @@
+const { spawn, Thread, Worker } = "threads";
+
 const { hello, heavy_task, light_task } = require("faas-app");
 // TODO?: now invoker returns Object, and tests will fail
 const {
@@ -11,25 +13,33 @@ const { ReusableInvoker } = require("./invoker");
 const { ContainerInvoker } = require("./container");
 const { WasmInvoker } = require("./wasm");
 
+const defaultName = "default";
+
 class SwitchingInvoker extends ReusableInvoker {
   constructor({ cachingContainer, containerTask }, { wasmFunc }) {
     super();
 
-    this.containerInvoker = new ContainerInvoker(
+    [this.containerWorker, this.wasmWorker] = await Promise.all([
+      spawn(new Worker("./container")),
+      spawn(new Worker("./wasm")),
+    ]);
+
+    this.containerWorker.addContainer(
+      defaultName,
       cachingContainer,
       containerTask
     );
-    this.wasmInvoker = new WasmInvoker(wasmFunc);
+    this.wasmWorker.addModule(defaultName, wasmFunc);
   }
 
   async _invoke(input) {
-    const container = this.containerInvoker.container;
+    const containerIsRunning = this.containerWorker.isRunning(defaultName);
 
     // Run both on first call
-    if (!container.running) {
-      const { result } = await this.wasmInvoker.run(input);
-      const _containerDryRun = this.containerInvoker.run(input);
-      return result;
+    if (containerIsRunning) {
+      const wasmRun = this.wasmWorker.run(defaultName, input);
+      const containerRun = this.containerWorker.run(defaultName, input);
+      return Promise.any([wasmRun, containerRun]);
     }
 
     console.log("wasm history", this.wasmInvoker.elapsedTimeHistory);

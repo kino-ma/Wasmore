@@ -37,6 +37,10 @@ expose({
     const invoker = this.invokers[name];
     return invoker.run(input);
   },
+
+  isRunning(name) {
+    return this.invokers[name].container.isRunning;
+  },
 });
 
 module.exports = { ContainerInvoker };
