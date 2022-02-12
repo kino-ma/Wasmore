@@ -8,6 +8,7 @@ describe("Test ContainerInvoker", () => {
   test("ContainerInvoker can _invoke()", async () => {
     const cachingConatiner = helloContainer;
     const invoker = new ContainerInvoker(cachingConatiner, "hello");
+    await invoker.setup();
     const result = await invoker._invoke(name);
 
     expect(result).toEqual(expectedResult);
@@ -16,6 +17,7 @@ describe("Test ContainerInvoker", () => {
   test("ContainerInvoker can run", async () => {
     const cachingConatiner = helloContainer;
     const invoker = new ContainerInvoker(cachingConatiner, "hello");
+    invoker.setup();
     const { result, elapsed } = await invoker.run(name);
 
     const expectedResult = expect.stringContaining("hello");

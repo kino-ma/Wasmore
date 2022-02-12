@@ -21,6 +21,7 @@ describe("Test WasmInvoker", () => {
   test("WasmInvoker can _invoke()", async () => {
     const func = hello;
     const invoker = new WasmInvoker(func);
+    await invoker.setup();
 
     const result = await invoker._invoke(name);
 
@@ -30,6 +31,7 @@ describe("Test WasmInvoker", () => {
   test("WasmInvoker can run", async () => {
     const func = hello;
     const invoker = new WasmInvoker(func);
+    await invoker.setup();
 
     const { result, elapsed } = await invoker.run(name);
 

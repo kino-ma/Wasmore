@@ -32,6 +32,7 @@ describe("Test SwitchingInvoker", () => {
   );
 
   test("SwitchingInvoker can _invoke()", async () => {
+    await invoker.setup();
     const result = await invoker._invoke(name);
 
     expect(result).toEqual(expectedResult);
