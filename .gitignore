@@ -1,6 +1,6 @@
 node_modules
 
 ## Yarn
-.yarn/
-!.yarn/release/*
-!.yarn/plugins/*
+.yarn/*
+!.yarn/release
+!.yarn/plugins
