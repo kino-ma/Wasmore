@@ -6,14 +6,16 @@ class WasmInvoker extends ReusableInvoker {
   constructor(funcName) {
     super();
 
-    this._spawn();
-
     this.funcName = funcName;
     this.worker = null;
   }
 
   async _spawn(path = "./workers/wasm") {
-    this.worker = spawn(new Worker(path));
+    this.worker = await spawn(new Worker(path));
+  }
+
+  async _init() {
+    await this._spawn();
   }
 
   async _invoke(input) {

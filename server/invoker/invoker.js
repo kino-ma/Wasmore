@@ -33,7 +33,7 @@ class ReusableInvoker {
   }
 
   async run(input) {
-    this.setup();
+    await this.setup();
 
     const { result, elapsed } = await measure("invoker exec", () =>
       this._invoke(input)

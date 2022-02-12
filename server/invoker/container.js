@@ -6,13 +6,16 @@ class ContainerInvoker extends ReusableInvoker {
   constructor(task) {
     super();
 
-    this._spawn();
     this.worker = null;
     this.task = task;
   }
 
   async _spawn(path = "./workers/container") {
-    this.worker = spawn(new Worker(path));
+    this.worker = await spawn(new Worker(path));
+  }
+
+  async _init() {
+    await this._spawn();
   }
 
   async _invoke(input) {
