@@ -1,6 +1,6 @@
-const { hello } = require("faas-app");
-
 const { WasmInvoker } = require("./wasm");
+
+const hello = "hello";
 
 describe("Test WebASsembly itself", () => {
   test("wasm hello returns correct value", async () => {
