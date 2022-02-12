@@ -29,12 +29,12 @@ class SwitchingInvoker extends ReusableInvoker {
   }
 
   async _invoke(input) {
-    const containerIsRunning = this.containerWorker.isRunning(defaultName);
+    const containerIsRunning = this.containerInvoker.isRunning();
 
     // Run both on first call
     if (containerIsRunning) {
-      const wasmRun = this.wasmWorker.run(defaultName, input);
-      const containerRun = this.containerWorker.run(defaultName, input);
+      const wasmRun = this.wasmInvoker.run(input);
+      const containerRun = this.containerInvoker.run(input);
       return Promise.any([wasmRun, containerRun]);
     }
 

@@ -27,6 +27,10 @@ class ContainerInvoker extends ReusableInvoker {
 
     return this.worker.run(this.task, input);
   }
+
+  async isRunning() {
+    return this.worker.isRunning();
+  }
 }
 
 module.exports = { ContainerInvoker };

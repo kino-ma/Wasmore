@@ -10,13 +10,15 @@ expose({
     container = new CachingContainer(cmd);
   },
 
-  run(task, input) {
+  async run(task, input) {
     const isIntTask = intTasks.includes(task);
 
-    return container.startAndExec({
+    const res = await container.startAndExec({
       input: isIntTask ? parseInt(input) : input,
       task: task,
     });
+    console.log({ runRes: res });
+    return res;
   },
 
   isRunning() {
