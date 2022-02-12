@@ -21,26 +21,4 @@ class ContainerInvoker extends ReusableInvoker {
   }
 }
 
-expose({
-  invokers: {},
-
-  addContainer(name, cachingContainer, task) {
-    const invoker = new ContainerInvoker(cachingContainer, task);
-    this.invokers[name] = invoker;
-  },
-
-  runContainer(name, input) {
-    if (!name in this.invokers) {
-      throw new Error(`no such ContainerInvoker: ${name}`);
-    }
-
-    const invoker = this.invokers[name];
-    return invoker.run(input);
-  },
-
-  isRunning(name) {
-    return this.invokers[name].container.isRunning;
-  },
-});
-
 module.exports = { ContainerInvoker };
