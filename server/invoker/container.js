@@ -1,4 +1,5 @@
 const { spawn, Thread, Worker } = require("threads");
+const debug = require("debug")("container-invoker");
 
 const { ReusableInvoker } = require("./invoker");
 
@@ -34,6 +35,7 @@ class ContainerInvoker extends ReusableInvoker {
 
   async estimateNext() {
     const coldStarts = await this.worker.getColdStarts();
+    debug("cold starts: ", coldStarts);
     const warmStartElapsed = this.elapsedTimeHistory.reduce((arr, elem, i) => {
       if (i === coldStarts[0]) {
         coldStarts.shift();
@@ -42,6 +44,8 @@ class ContainerInvoker extends ReusableInvoker {
       }
       return arr;
     }, []);
+
+    debug("warm start elapsed: ", warmStartElapsed);
 
     const warmStartAvg = this.averageElapsedTime({
       customHist: warmStartElapsed,
