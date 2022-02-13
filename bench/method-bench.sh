@@ -10,6 +10,7 @@ usage_exit() {
 
 name=${1:-}
 out_dir=${2:-.}
+mkdir -p $out_dir
 
 if [[ -z "$name" ]]
 then
@@ -31,11 +32,38 @@ python3 bench.py "$path" "$input" > "$out_dir/$name-$task.csv"
 
 # MANY HEAVY
 task=heavy
-input=500
-for i in {2..7}
+living_containers="$out_dir/$name-$task-living-containers.csv"
+echo "count,time,living-containers" > "$living_containers"
+# clean containers before counting many containers
+( cd .. && make clean-container )
+
+echo
+echo
+echo "start many"
+echo
+
+for count in {1..10}
 do
-    path="/$task-tasks/$i"
-    python3 bench.py "$path" "$input" > "$out_dir/$name-$task-$input.csv"
-    input+=0
-    sleep 1
+    input=500
+
+    echo
+    echo "-- many #$count --"
+    echo
+
+    for i in {2..7}
+    do
+        path="/$task-tasks/$i"
+        python3 bench.py "$path" "$input" > "$out_dir/$name-$task-$input-$count.csv"
+        input+=0
+        sleep 1
+    done
+
+    /bin/echo -n "number of containers:"
+    time="$(date +%R:%S)"
+    containers="$(docker ps | grep -v "CONTAINER ID" | wc -l)"
+    /bin/echo "#$count ($time): $containers"
+    echo "$count,$time,$containers" >> $living_containers
+    echo
+    
+    sleep 5m
 done
