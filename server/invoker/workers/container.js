@@ -14,7 +14,7 @@ expose({
   async run(task, input) {
     const isIntTask = intTasks.includes(task);
 
-    coldStarts.push(!this.isRunning());
+    coldStarts.push(!container.isRunning);
 
     const res = await container.startAndExec({
       input: isIntTask ? parseInt(input) : input,
