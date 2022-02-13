@@ -1982,7 +1982,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:2.6.9, debug@npm:~2.6.9":
+"debug@npm:2.6.9":
   version: 2.6.9
   resolution: "debug@npm:2.6.9"
   dependencies:
@@ -5228,7 +5228,7 @@ __metadata:
   resolution: "serverless-edge@workspace:."
   dependencies:
     cookie-parser: ~1.4.4
-    debug: ~2.6.9
+    debug: ^4.3.3
     dockerode: "https://github.com/kino-ma/dockerode#exec-buf"
     eslint: ^8.8.0
     express: ~4.16.1
