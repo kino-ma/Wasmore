@@ -1,4 +1,5 @@
 const { expose } = require("threads/worker");
+const debug = require("debug")("container-worker");
 
 const { CachingContainer } = require("../../../utils/container");
 
@@ -14,7 +15,7 @@ expose({
   async run(task, input) {
     const isIntTask = intTasks.includes(task);
 
-    coldStarts.push(!container.isRunning);
+    coldStarts.push(!container.running);
 
     const res = await container.startAndExec({
       input: isIntTask ? parseInt(input) : input,
@@ -28,7 +29,10 @@ expose({
   },
 
   coldStartTime() {
-    return container.elapsedTime.start ?? Infinity;
+    debug({ elapsedTimes: container.elapsedTime });
+    return container.elapsedTime.start === null
+      ? container.elapsedTime.start
+      : Infinity;
   },
 
   getColdStarts() {
