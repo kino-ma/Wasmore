@@ -58,10 +58,10 @@ do
         sleep 1
     done
 
-    /bin/echo -n "number of containers:"
     time="$(date +%R:%S)"
-    containers="$(docker ps | grep -v "CONTAINER ID" | wc -l)"
-    /bin/echo "#$count ($time): $containers"
+    # grep exists with 0 if none matched
+    containers="$(docker ps | grep -v 'CONTAINER ID' | wc -l || true)"
+    /bin/echo "number of containers: #$count ($time): $containers"
     echo "$count,$time,$containers" >> $living_containers
     echo
     
