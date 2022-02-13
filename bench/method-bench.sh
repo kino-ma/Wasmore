@@ -16,8 +16,14 @@ then
     usage_exit
 fi
 
-for task in "light" "heavy"
-do
-    path="/$task-task"
-    python3 bench.py "$path" > "$out_dir/$name-$task.csv"
-done
+# LIGHT
+task=light
+input=92
+path="/$task-task"
+python3 bench.py "$path" "$input" > "$out_dir/$name-$task.csv"
+
+# HEAVY
+task=heavy
+input=50000000
+path="/$task-task"
+python3 bench.py "$path" "$input" > "$out_dir/$name-$task.csv"

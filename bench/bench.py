@@ -58,7 +58,7 @@ def send_request(url, input=None):
         return requests.get(url)
 
 
-def main(path=None):
+def main(path=None, inp=None):
     base_url = "http://localhost:3000"
 
     if not path:
@@ -89,7 +89,7 @@ def main(path=None):
     url = f"{base_url}{path}"
     for i in range(REQUEST_COUNT):
         time.sleep(INTERVAL)
-        response = send_request(url, 92)
+        response = send_request(url, inp)
         elapsed = response.elapsed - base_latency
         latencies.append(elapsed)
 
@@ -101,4 +101,5 @@ def main(path=None):
 
 if __name__ == "__main__":
     path = sys.argv[1] if len(sys.argv) > 1 else None
-    main(path)
+    inp = sys.argv[2] if len(sys.argv) > 2 else None
+    main(path, inp)
