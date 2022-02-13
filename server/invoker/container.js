@@ -8,6 +8,7 @@ class ContainerInvoker extends ReusableInvoker {
 
     this.worker = null;
     this.task = task;
+    this.coldStarts = [];
   }
 
   async _spawn(path = "./workers/container") {
@@ -29,6 +30,29 @@ class ContainerInvoker extends ReusableInvoker {
     }
 
     return this.worker.run(this.task, input);
+  }
+
+  async estimateNext() {
+    const coldStarts = await this.worker.getColdStarts();
+    const warmStartElapsed = this.elapsedTimeHistory.reduce((arr, elem, i) => {
+      if (i === coldStarts[0]) {
+        coldStarts.shift();
+      } else {
+        arr.push(elem);
+      }
+      return arr;
+    }, []);
+
+    const warmStartAvg = this.averageElapsedTime({
+      customHist: warmStartElapsed,
+    });
+
+    if (this.isRunning()) {
+      return warmStartAvg;
+    } else {
+      const coldStart = this.worker.coldStartTime();
+      return warmStartAvg + coldStart;
+    }
   }
 
   async isRunning() {
