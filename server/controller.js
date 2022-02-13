@@ -8,6 +8,7 @@ const {
   date,
   invokeHello,
   lightMany,
+  heavyMany,
 } = require("./invoker");
 
 const indexRouter = require("./routes/index");
