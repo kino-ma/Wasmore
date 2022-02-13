@@ -2,7 +2,7 @@ const { measure } = require("../../utils/perf");
 
 // Abstract class/interface. Subclasses must implement `constructor()` and `_invoke()`.
 class ReusableInvoker {
-  constructor() {
+  constructor(initOptions = {}, finOptions = {}) {
     if (this.constructor === ReusableInvoker) {
       throw new TypeError(
         "Abstract class ReusableInvoker cannot be instantiated directly"
@@ -10,6 +10,9 @@ class ReusableInvoker {
     }
 
     this.elapsedTimeHistory = [];
+    this._initialized = false;
+    this._initOptions = initOptions;
+    this._finOptions = finOptions;
   }
 
   // Required method to implement this abstract class
@@ -18,9 +21,22 @@ class ReusableInvoker {
     throw new TypeError("You must implement `async _invoke()`");
   }
 
+  // optional custom methods
+  async _init(options = this._initOptions) {}
+  async _fin(options = this._finOptions) {}
+
   // --- Provided methods ---
 
+  async setup() {
+    if (!this._initialized) {
+      await this._init(this._initOptions);
+      this._initialized = true;
+    }
+  }
+
   async run(input) {
+    await this.setup();
+
     const { result, elapsed } = await measure("invoker exec", () =>
       this._invoke(input)
     );

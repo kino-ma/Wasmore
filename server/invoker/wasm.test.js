@@ -1,18 +1,6 @@
-const { hello } = require("faas-app");
-
 const { WasmInvoker } = require("./wasm");
 
-describe("Test WebASsembly itself", () => {
-  test("wasm hello returns correct value", async () => {
-    const name = "kino-ma";
-    const output = hello(name);
-    expect(output).toBe(`hello, ${name}`);
-
-    const name2 = "makino";
-    const output2 = await hello(name2 + "dayo");
-    expect(output2).not.toBe(`hello, ${name2}`);
-  });
-});
+const hello = "hello";
 
 describe("Test WasmInvoker", () => {
   const name = "hoge";
@@ -21,20 +9,26 @@ describe("Test WasmInvoker", () => {
   test("WasmInvoker can _invoke()", async () => {
     const func = hello;
     const invoker = new WasmInvoker(func);
+    await invoker.setup();
 
     const result = await invoker._invoke(name);
 
     expect(result).toEqual(expectedResult);
+
+    await invoker._fin();
   });
 
   test("WasmInvoker can run", async () => {
     const func = hello;
     const invoker = new WasmInvoker(func);
+    await invoker.setup();
 
     const { result, elapsed } = await invoker.run(name);
 
     expect(result).toEqual(expectedResult);
     expect(elapsed).toBeGreaterThan(0);
+
+    await invoker._fin();
   });
 
   test("WasmInvoker can reused many times", async () => {
@@ -48,5 +42,7 @@ describe("Test WasmInvoker", () => {
     const avgElapsed = invoker.averageElapsedTime();
     // approximately equals to 16 with 2 significant figures
     expect(avgElapsed).toBeGreaterThan(0);
+
+    await invoker._fin();
   });
 });

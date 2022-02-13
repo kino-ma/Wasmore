@@ -1,7 +1,7 @@
-const { hello } = require("faas-app");
 const { VM } = require("vm2");
+
 const { helloContainer } = require("../../utils/container");
-const { date, ReusableInvoker, SwitchingInvoker } = require(".");
+const { date, SwitchingInvoker } = require(".");
 
 describe("Test Invoker", () => {
   test("Date invoker  should return date", async () => {
@@ -27,11 +27,16 @@ describe("Test SwitchingInvoker", () => {
   const expectedResult = expect.stringContaining(`hello, ${name}`);
   const cachingContainer = helloContainer;
   const invoker = new SwitchingInvoker(
-    { cachingContainer, containerTask: "hello" },
-    { wasmFunc: hello }
+    { containerTask: "hello" },
+    { wasmFuncName: "hello" }
   );
 
+  afterAll(async () => {
+    await invoker._fin();
+  });
+
   test("SwitchingInvoker can _invoke()", async () => {
+    await invoker.setup();
     const result = await invoker._invoke(name);
 
     expect(result).toEqual(expectedResult);

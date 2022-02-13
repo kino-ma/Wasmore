@@ -1,21 +1,38 @@
-const { measure } = require("../../utils/perf");
+const { spawn, Thread, Worker } = require("threads");
+
 const { ReusableInvoker } = require("./invoker");
 
-const intTasks = ["light", "heavy"];
-
 class ContainerInvoker extends ReusableInvoker {
-  constructor(cachingContainer, task) {
+  constructor(task) {
     super();
-    this.container = cachingContainer;
+
+    this.worker = null;
     this.task = task;
-    this.isIntTask = intTasks.includes(task);
+  }
+
+  async _spawn(path = "./workers/container") {
+    this.worker = await spawn(new Worker(path));
+    await this.worker.init(["/root/faas_bin"]);
+  }
+
+  async _init() {
+    await this._spawn();
+  }
+
+  async _fin() {
+    await Thread.terminate(this.worker);
   }
 
   async _invoke(input) {
-    return this.container.startAndExec({
-      input: this.isIntTask ? parseInt(input) : input,
-      task: this.task,
-    });
+    if (this.worker === null) {
+      throw new Error("Worker is not initialized yet.");
+    }
+
+    return this.worker.run(this.task, input);
+  }
+
+  async isRunning() {
+    return this.worker.isRunning();
   }
 }
 

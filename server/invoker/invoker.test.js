@@ -15,6 +15,8 @@ describe("Test ReusableInvoker class", () => {
 
   test("Invoker can invoke task", async () => {
     const invoker = new SampleInvoker();
+    await invoker.setup();
+
     const result = await invoker._invoke();
     expect(result).toEqual(expectedResult);
   });

@@ -1,34 +1,45 @@
+const { spawn, Thread, Worker } = "threads";
+
 const { hello, heavy_task, light_task } = require("faas-app");
 // TODO?: now invoker returns Object, and tests will fail
 const {
   callContainer,
   dateRunner,
   helloContainer,
-  lightContainer,
-  heavyContainer,
 } = require("../../utils/container");
 const { ReusableInvoker } = require("./invoker");
 const { ContainerInvoker } = require("./container");
 const { WasmInvoker } = require("./wasm");
 
 class SwitchingInvoker extends ReusableInvoker {
-  constructor({ cachingContainer, containerTask }, { wasmFunc }) {
+  constructor({ containerTask }, { wasmFuncName }) {
     super();
 
-    this.containerInvoker = new ContainerInvoker(
-      cachingContainer,
-      containerTask
-    );
-    this.wasmInvoker = new WasmInvoker(wasmFunc);
+    this.containerInvoker = new ContainerInvoker(containerTask);
+    this.wasmInvoker = new WasmInvoker(wasmFuncName);
+  }
+
+  async _init() {
+    await Promise.all([
+      this.containerInvoker.setup(),
+      this.wasmInvoker.setup(),
+    ]);
+  }
+
+  async _fin() {
+    await this.containerInvoker._fin();
+    await this.wasmInvoker._fin();
   }
 
   async _invoke(input) {
-    const container = this.containerInvoker.container;
+    const containerIsRunning = this.containerInvoker.isRunning();
 
     // Run both on first call
-    if (!container.running) {
-      const { result } = await this.wasmInvoker.run(input);
-      const _containerDryRun = this.containerInvoker.run(input);
+    if (containerIsRunning) {
+      const wasmRun = this.wasmInvoker.run(input);
+      const containerRun = this.containerInvoker.run(input);
+
+      const { result } = await Promise.any([wasmRun, containerRun]);
       return result;
     }
 
@@ -40,20 +51,21 @@ class SwitchingInvoker extends ReusableInvoker {
     console.log({ wasmElapsed, containerElapsed });
 
     if (wasmElapsed <= containerElapsed) {
-      return await this.wasmInvoker.run(input);
+      let { result } = await this.wasmInvoker.run(input);
+      return result;
     } else {
-      return await this.containerInvoker.run(input);
+      let { result } = await this.containerInvoker.run(input);
+      return result;
     }
   }
 }
 
 const heavyInvoker = new SwitchingInvoker(
   {
-    cachingContainer: heavyContainer,
     containerTask: "heavy",
   },
   {
-    wasmFunc: heavy_task,
+    wasmFuncName: "heavy_task",
   }
 );
 
@@ -63,11 +75,10 @@ const heavy = (input) => {
 
 const lightInvoker = new SwitchingInvoker(
   {
-    cachingContainer: lightContainer,
     containerTask: "light",
   },
   {
-    wasmFunc: light_task,
+    wasmFuncName: "light_task",
   }
 );
 
@@ -88,10 +99,7 @@ const container = async (input) => {
 
 const date = async (_input) => {
   const container = dateRunner;
-  // let before = performance.now();
   const output = await container.startAndExec();
-  // let after = performance.now();
-  // console.log(`startAndExec took: ${after - before} ms`);
   return output;
 };
 

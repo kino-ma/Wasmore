@@ -1,25 +1,32 @@
-const { VM } = require("vm2");
-
 const { ReusableInvoker } = require("./invoker");
-const { measure } = require("../../utils/perf");
+const { spawn, Thread, Worker } = require("threads");
 
 class WasmInvoker extends ReusableInvoker {
-  constructor(func) {
+  constructor(funcName) {
     super();
-    this.func = func;
+
+    this.funcName = funcName;
+    this.worker = null;
+  }
+
+  async _spawn(path = "./workers/wasm") {
+    this.worker = await spawn(new Worker(path));
+  }
+
+  async _init() {
+    await this._spawn();
+  }
+
+  async _fin() {
+    await Thread.terminate(this.worker);
   }
 
   async _invoke(input) {
-    const globalObject = {
-      func: this.func,
-      arg: input,
-    };
+    if (this.worker === null) {
+      throw new Error("Worker is not initialized yet.");
+    }
 
-    const vm = new VM({
-      sandbox: globalObject,
-    });
-
-    return await vm.run("func(arg)");
+    return this.worker.run(this.funcName, input);
   }
 }
 
