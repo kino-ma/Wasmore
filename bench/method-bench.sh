@@ -3,11 +3,12 @@
 set -euxo pipefail
 
 usage_exit() {
+    set +x
     echo "./method-bench.sh <NAME> [OUT_DIR]"
     exit 1
 }
 
-name=${1}
+name=${1:-}
 out_dir=${2:-.}
 
 if [[ -z "$name" ]]
