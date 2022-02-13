@@ -161,7 +161,7 @@ class CachingContainer extends Container {
 
       this._stopPromise = wait(this.timeoutMs).then(async () => {
         const container = await this.container;
-        await container.stop();
+        await container.kill();
         this.running = false;
         this._stopPromise = null;
       });
