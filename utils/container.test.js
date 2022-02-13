@@ -33,7 +33,7 @@ describe("Test the container utility", () => {
       AttachStdout: true,
     });
 
-    await container.run((wait = false));
+    await container.run();
     const output = await container.exec(
       ["bash", "-c", "'uname -a && sleep 0.1 && echo next'"],
       new stream.ReadableStream("hogehoge\n")
