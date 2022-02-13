@@ -28,3 +28,14 @@ task=heavy
 input=50000000
 path="/$task-task"
 python3 bench.py "$path" "$input" > "$out_dir/$name-$task.csv"
+
+# MANY HEAVY
+task=heavy
+input=500
+for i in {2..7}
+do
+    path="/$task-tasks/$i"
+    python3 bench.py "$path" "$input" > "$out_dir/$name-$task-$input.csv"
+    input+=0
+    sleep 1
+done
