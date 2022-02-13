@@ -23,4 +23,8 @@ expose({
   isRunning() {
     return container.isRunning;
   },
+
+  coldStartTime() {
+    return container.elapsedTime.start ?? Infinity;
+  },
 });

@@ -49,13 +49,14 @@ class ReusableInvoker {
     return { result, elapsed };
   }
 
-  averageElapsedTime() {
-    const length = this.elapsedTimeHistory.length;
+  averageElapsedTime(options = { removeFirst: false }) {
+    const hist = !removeFirst
+      ? this.elapsedTimeHistory
+      : this.elapsedTimeHistory.slice(1);
 
-    const sum = this.elapsedTimeHistory.reduce(
-      (e, elapsedTime) => e + elapsedTime,
-      0
-    );
+    const length = hist.length;
+
+    const sum = hist.reduce((e, elapsedTime) => e + elapsedTime, 0);
     console.log({ sum, length });
 
     const avg = sum / length;

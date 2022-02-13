@@ -31,6 +31,17 @@ class ContainerInvoker extends ReusableInvoker {
     return this.worker.run(this.task, input);
   }
 
+  async estimateNext() {
+    const withoutColdStart = this.averageElapsedTime({ removeFirst: true });
+
+    if (this.isRunning()) {
+      return withoutColdStart;
+    } else {
+      const coldStart = this.worker.coldStartTime();
+      return withoutColdStart + coldStart;
+    }
+  }
+
   async isRunning() {
     return this.worker.isRunning();
   }
