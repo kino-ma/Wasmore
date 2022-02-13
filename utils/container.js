@@ -123,7 +123,11 @@ class Container {
 }
 
 class CachingContainer extends Container {
-  constructor(command, customOptions = {}) {
+  constructor(
+    command,
+    options = { timeoutMs: 5 * 60 * 1000 },
+    customContainerOptions = {}
+  ) {
     const defaultOptions = {
       Image: "faas-bin",
       AttachStdout: true,
@@ -133,7 +137,7 @@ class CachingContainer extends Container {
 
     const startOptions = {
       ...defaultOptions,
-      ...customOptions,
+      ...customContainerOptions,
     };
 
     super(startOptions);
@@ -141,6 +145,8 @@ class CachingContainer extends Container {
     this.startOptions = startOptions;
     this.running = false;
     this.command = command;
+    this.timeoutMs = options.timeoutMs;
+    this._stopPromise = null;
     this.elapsedTime.execs = [];
   }
 
@@ -152,6 +158,14 @@ class CachingContainer extends Container {
     if (!this.running) {
       const started = await super.start();
       this.running = true;
+
+      this._stopPromise = wait(this.timeoutMs).then(async () => {
+        const container = await this.container;
+        await container.kill();
+        this.running = false;
+        this._stopPromise = null;
+      });
+
       return started;
     }
   }
