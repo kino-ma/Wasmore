@@ -49,10 +49,8 @@ class ReusableInvoker {
     return { result, elapsed };
   }
 
-  averageElapsedTime(options = { removeFirst: false }) {
-    const hist = !removeFirst
-      ? this.elapsedTimeHistory
-      : this.elapsedTimeHistory.slice(1);
+  averageElapsedTime(options = { customHist: null }) {
+    const hist = options.customHist ?? this.elapsedTimeHistory;
 
     const length = hist.length;
 

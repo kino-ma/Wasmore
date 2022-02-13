@@ -3,6 +3,7 @@ const { expose } = require("threads/worker");
 const { CachingContainer } = require("../../../utils/container");
 
 let container = null;
+const coldStarts = [];
 const intTasks = ["light", "heavy"];
 
 expose({
@@ -12,6 +13,8 @@ expose({
 
   async run(task, input) {
     const isIntTask = intTasks.includes(task);
+
+    coldStarts.push(!this.isRunning());
 
     const res = await container.startAndExec({
       input: isIntTask ? parseInt(input) : input,
@@ -26,5 +29,14 @@ expose({
 
   coldStartTime() {
     return container.elapsedTime.start ?? Infinity;
+  },
+
+  getColdStarts() {
+    return coldStarts.reduce((arr, elem, i) => {
+      if (elem) {
+        arr.push(i);
+      }
+      return arr;
+    }, []);
   },
 });
