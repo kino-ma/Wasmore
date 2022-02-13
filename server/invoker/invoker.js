@@ -25,6 +25,10 @@ class ReusableInvoker {
   async _init(options = this._initOptions) {}
   async _fin(options = this._finOptions) {}
 
+  async estimateNext() {
+    return this.averageElapsedTime();
+  }
+
   // --- Provided methods ---
 
   async setup() {
@@ -45,13 +49,12 @@ class ReusableInvoker {
     return { result, elapsed };
   }
 
-  averageElapsedTime() {
-    const length = this.elapsedTimeHistory.length;
+  averageElapsedTime(options = { customHist: null }) {
+    const hist = options.customHist ?? this.elapsedTimeHistory;
 
-    const sum = this.elapsedTimeHistory.reduce(
-      (e, elapsedTime) => e + elapsedTime,
-      0
-    );
+    const length = hist.length;
+
+    const sum = hist.reduce((e, elapsedTime) => e + elapsedTime, 0);
     console.log({ sum, length });
 
     const avg = sum / length;
