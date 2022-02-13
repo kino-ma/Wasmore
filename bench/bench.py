@@ -90,7 +90,8 @@ def main(path=None, inp=None):
     for i in range(REQUEST_COUNT):
         time.sleep(INTERVAL)
         response = send_request(url, inp)
-        elapsed = response.elapsed - base_latency
+        elapsedMs = response.json()["elapsed"]
+        elapsed = datetime.timedelta(milliseconds=elapsedMs)
         latencies.append(elapsed)
 
     eprint(f"## {path} ##")
