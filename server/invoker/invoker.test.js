@@ -38,4 +38,18 @@ describe("Test ReusableInvoker class", () => {
     // approximately equals to 16 with 2 significant figures
     expect(avgElapsed).toBeGreaterThan(0);
   });
+
+  test("averageElapsedTime() returns average", async () => {
+    const invoker = new SampleInvoker();
+    invoker.elapsedTimeHistory = [16, 16, 16, 16];
+    const avg = invoker.averageElapsedTime();
+    expect(avg).toBeCloseTo(16);
+  });
+
+  test("averageElapsedTime() returns average with custom history", async () => {
+    const invoker = new SampleInvoker();
+    const customHist = [16, 16, 16, 16];
+    const avg = invoker.averageElapsedTime({ customHist });
+    expect(avg).toBeCloseTo(16);
+  });
 });

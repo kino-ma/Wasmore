@@ -6,6 +6,7 @@ const {
   dateRunner,
   helloContainer,
 } = require("./container");
+const wait = require("./wait");
 
 describe("Test the container utility", () => {
   test("It can use Docker API", async () => {
@@ -32,7 +33,7 @@ describe("Test the container utility", () => {
       AttachStdout: true,
     });
 
-    await container.run((wait = false));
+    await container.run();
     const output = await container.exec(
       ["bash", "-c", "'uname -a && sleep 0.1 && echo next'"],
       new stream.ReadableStream("hogehoge\n")
@@ -65,5 +66,20 @@ describe("Test the container utility", () => {
     const container = helloContainer;
     const output = await container.startAndExec("hoge\n");
     expect(output).not.toBeFalsy();
+  });
+
+  test("container dies at the timeout", async () => {
+    const container = new CachingContainer("sleep 5", { timeoutMs: 0 });
+    await container.manualStart();
+    await container._stopPromise;
+    expect(container.running).toBeFalsy();
+  });
+
+  test("container does not die before the timeout", async () => {
+    const container = new CachingContainer("sleep 5", { timeoutMs: 1000 });
+    await container.manualStart();
+    expect(container.running).toBeTruthy();
+    await wait(500);
+    expect(container.running).toBeTruthy();
   });
 });

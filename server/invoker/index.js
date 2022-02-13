@@ -32,10 +32,8 @@ class SwitchingInvoker extends ReusableInvoker {
   }
 
   async _invoke(input) {
-    const containerIsRunning = this.containerInvoker.isRunning();
-
-    // Run both on first call
-    if (containerIsRunning) {
+    // Run both on the first 3 calls
+    if (this.elapsedTimeHistory.length < 3) {
       const wasmRun = this.wasmInvoker.run(input);
       const containerRun = this.containerInvoker.run(input);
 
@@ -44,13 +42,13 @@ class SwitchingInvoker extends ReusableInvoker {
     }
 
     console.log("wasm history", this.wasmInvoker.elapsedTimeHistory);
-    const wasmElapsed = this.wasmInvoker.averageElapsedTime();
+    const wasmEstimated = await this.wasmInvoker.estimateNext();
     console.log("container hisotry", this.containerInvoker.elapsedTimeHistory);
-    const containerElapsed = this.containerInvoker.averageElapsedTime();
+    const containerEstimated = await this.containerInvoker.estimateNext();
 
-    console.log({ wasmElapsed, containerElapsed });
+    console.log({ wasmEstimated, containerEstimated });
 
-    if (wasmElapsed <= containerElapsed) {
+    if (wasmEstimated <= containerEstimated) {
       let { result } = await this.wasmInvoker.run(input);
       return result;
     } else {

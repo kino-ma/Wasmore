@@ -56,7 +56,7 @@ test: test-js test-rs
 
 test-js:
 	@$(MAKE) clean-container &>/dev/null
-	yarn test
+	yarn test --detectOpenHandles
 	@$(MAKE) clean-container &>/dev/null
 
 test-rs: rust-container
