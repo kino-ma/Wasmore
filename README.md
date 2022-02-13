@@ -1,19 +1,21 @@
 # Wasmore - measurement branch
+
 In this branch, we measure performance of Wasmore.
 
-**Wasmore** gives FaaS computing *more* speed, with *Wasm*.
+**Wasmore** gives FaaS computing _more_ speed, with _Wasm_.
 
 Prototype implementation of my research, which make FaaS computing faster by combinating WebAssembly and container.
 
 ## Measurement
-We measured the performance of *container only*, *WebAssembly only*, and *proposed method*.
+
+We measured the performance of _container only_, _WebAssembly only_, and _proposed method_.
 
 `bench/bench.py` was used for each.
 
 We modify only `server/invoker.js` to change the measured method. See each tagged commit to refer to source codes at the measured time.
 
-
 ## Proposed method
+
 ```
 ## light ##
    14915 μs
@@ -47,40 +49,38 @@ max:       6473410 μs
 ```
 
 ## Container only
-```
-## light ##
-  317061 μs
-   82128 μs
-   83275 μs
-   69788 μs
-   74841 μs
-  101821 μs
-   88525 μs
-   85603 μs
-   58003 μs
-   57040 μs
-average:    101808 μs
-min:         57040 μs
-max:        317061 μs
 
-## heavy ##
- 3302060 μs
- 3140061 μs
- 3127503 μs
- 3102032 μs
- 3119367 μs
- 3058797 μs
- 3098760 μs
- 3097057 μs
- 3123441 μs
- 3113002 μs
-average:   3128208 μs
-min:       3058797 μs
-max:       3302060 μs
 ```
+## /light-task ##
+   37817 μs
+    5570 μs
+    4944 μs
+    9617 μs
+    6184 μs
+    5797 μs
+   17312 μs
+    7153 μs
+   14830 μs
+    9967 μs
 
+## /heavy-task ##
+ 3514572 μs
+ 3144721 μs
+ 3172257 μs
+ 3172586 μs
+ 3124115 μs
+ 3144710 μs
+ 3142036 μs
+ 3164037 μs
+ 3132494 μs
+ 3124731 μs
+average:   3183626 μs
+min:       3124115 μs
+max:       3514572 μs
+```
 
 ## WebAssembly only
+
 ```
 ## light ##
    13185 μs
