@@ -26,8 +26,8 @@ fn main() {
         }
 
         "hello" => {
-            let input = input.input.to_string();
-            json!(lib::hello(&input))
+            let input_str = input.input.as_str().expect("invalid string");
+            json!(lib::hello(input_str))
         }
 
         _ => {
