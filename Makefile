@@ -39,7 +39,7 @@ rust-container:
 	$(DOCKER_RUST_START)
 
 bin-runner: $(NATIVE_BUILD)
-	docker build -t $(DOCKER_BIN_NAME) --no-cache .
+	docker build -t $(DOCKER_BIN_NAME):latest --no-cache .
 
 bin: $(NATIVE_BUILD)
 
@@ -54,9 +54,10 @@ $(WASM_BIND): faas-app/src/lib.rs
 test: test-js test-rs
 	@echo OK
 
-test-js: clean-container
+test-js:
+	@$(MAKE) clean-container &>/dev/null
 	yarn test
-	$(MAKE) clean-container
+	@$(MAKE) clean-container &>/dev/null
 
 test-rs: rust-container
 	$(CARGO) test
