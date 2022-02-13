@@ -70,19 +70,6 @@ def main(path=None, inp=None):
     eprint()
     eprint(f" === START BENCHMARK FOR {path} == ")
 
-    # calculate average latency using `/` (root)
-    url = f"{base_url}/"
-    latencies = []
-    for _ in range(5):
-        time.sleep(0.1)
-        resp = send_request(url)
-        latencies.append(resp.elapsed)
-
-    base_latency = average(latencies)
-    eprint("base latency:", base_latency.microseconds)
-
-    time.sleep(1)
-
     # light tasks
     latencies = []
 
