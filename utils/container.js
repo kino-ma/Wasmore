@@ -159,12 +159,12 @@ class CachingContainer extends Container {
       const started = await super.start();
       this.running = true;
 
-      this._timeoutObject = setTimeout(() => {
+      this._timeoutObject = setTimeout(async () => {
         const container = await this.container;
         await container.stop();
         this.running = false;
         this._timeoutObject = null;
-      });
+      }, this.timeoutMs);
 
       return started;
     }
