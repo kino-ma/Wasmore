@@ -146,7 +146,7 @@ class CachingContainer extends Container {
     this.running = false;
     this.command = command;
     this.timeoutMs = options.timeoutMs;
-    this._timeoutObject = null;
+    this._stopPromise = null;
     this.elapsedTime.execs = [];
   }
 
@@ -159,12 +159,12 @@ class CachingContainer extends Container {
       const started = await super.start();
       this.running = true;
 
-      this._timeoutObject = setTimeout(async () => {
+      this._stopPromise = wait(this.timeoutMs).then(async () => {
         const container = await this.container;
         await container.stop();
         this.running = false;
-        this._timeoutObject = null;
-      }, this.timeoutMs);
+        this._stopPromise = null;
+      });
 
       return started;
     }
