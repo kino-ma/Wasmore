@@ -69,14 +69,14 @@ describe("Test the container utility", () => {
   });
 
   test("container dies at the timeout", async () => {
-    const container = new CachingContainer(":", { timeOutMs: 1 });
+    const container = new CachingContainer("sleep 5", { timeoutMs: 0 });
     await container.manualStart();
-    await wait(2);
+    await container._stopPromise;
     expect(container.running).toBeFalsy();
   });
 
   test("container does not die before the timeout", async () => {
-    const container = new CachingContainer(":", { timeOutMs: 2 * 1000 });
+    const container = new CachingContainer("sleep 5", { timeoutMs: 1000 });
     await container.manualStart();
     expect(container.running).toBeTruthy();
     await wait(500);
