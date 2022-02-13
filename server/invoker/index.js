@@ -32,10 +32,8 @@ class SwitchingInvoker extends ReusableInvoker {
   }
 
   async _invoke(input) {
-    const containerIsRunning = this.containerInvoker.isRunning();
-
-    // Run both on first call
-    if (containerIsRunning) {
+    // Run both on the first 3 calls
+    if (this.elapsedTimeHistory.length < 3) {
       const wasmRun = this.wasmInvoker.run(input);
       const containerRun = this.containerInvoker.run(input);
 
