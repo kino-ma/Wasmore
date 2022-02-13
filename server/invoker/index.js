@@ -84,7 +84,7 @@ const light = (input) => {
   return lightInvoker.run(input);
 };
 
-const lightInvokerMany = [...Array(50).keys()].map(
+const lightInvokerMany = [...Array(20).keys()].map(
   (_) =>
     new SwitchingInvoker(
       {
@@ -96,7 +96,7 @@ const lightInvokerMany = [...Array(50).keys()].map(
     )
 );
 
-const heavyInvokerMany = [...Array(50).keys()].map(
+const heavyInvokerMany = [...Array(20).keys()].map(
   (_) =>
     new SwitchingInvoker(
       {
