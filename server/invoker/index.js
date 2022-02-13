@@ -84,6 +84,37 @@ const light = (input) => {
   return lightInvoker.run(input);
 };
 
+const lightInvokerMany = Array(50)
+  .keys()
+  .map(
+    (_) =>
+      new SwitchingInvoker(
+        {
+          containerTask: "light",
+        },
+        {
+          wasmFuncName: "light_task",
+        }
+      )
+  );
+
+const heavyInvokerMany = Array(50)
+  .keys()
+  .map(
+    (_) =>
+      new SwitchingInvoker(
+        {
+          containerTask: "heavy",
+        },
+        {
+          wasmFuncName: "heavy_task",
+        }
+      )
+  );
+
+const lightMany = lightInvokerMany.map((invoker) => () => invoker.run);
+const heavyMany = heavyInvokerMany.map((invoker) => () => invoker.run);
+
 const container = async (input) => {
   try {
     const [data, container] = await callContainer(input);
@@ -109,6 +140,8 @@ const invokeHello = async (input) => {
 module.exports = {
   heavy,
   light,
+  heavyMany,
+  lightMany,
   container,
   date,
   invokeHello,
