@@ -25,6 +25,10 @@ class ReusableInvoker {
   async _init(options = this._initOptions) {}
   async _fin(options = this._finOptions) {}
 
+  async estimateNext() {
+    return this.averageElapsedTime();
+  }
+
   // --- Provided methods ---
 
   async setup() {
