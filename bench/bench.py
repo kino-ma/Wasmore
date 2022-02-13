@@ -24,12 +24,16 @@ def format_delta(delta):
     return f"{delta.seconds * 1_000_000 + delta.microseconds}"
 
 
+def eprint(*args):
+    print(*args, file=sys.stderr)
+
+
 def print_deltas(deltas):
     for d in deltas:
-        print(show_delta(d))
-    print("average: ", show_delta(average(deltas)), file=sys.stderr)
-    print("min:     ", show_delta(min(deltas)), file=sys.stderr)
-    print("max:     ", show_delta(max(deltas)), file=sys.stderr)
+        eprint(show_delta(d))
+    eprint("average: ", show_delta(average(deltas)))
+    eprint("min:     ", show_delta(min(deltas)))
+    eprint("max:     ", show_delta(max(deltas)))
 
 
 def write_csv(latencies, file):
@@ -46,11 +50,11 @@ def send_request(url, input=None):
     if input:
         # POST
         data = {"input": input}
-        print(f"request to {url} with {data}")
+        eprint(f"request to {url} with {data}")
         return requests.post(url, data)
     else:
         # GET
-        print(f"request to {url}")
+        eprint(f"request to {url}")
         return requests.get(url)
 
 
@@ -63,8 +67,8 @@ def main(path=None):
     if not path.startswith("/"):
         path = f"/{path}"
 
-    print(file=sys.stderr)
-    print(f" === START BENCHMARK FOR {path} == ", file=sys.stderr)
+    eprint()
+    eprint(f" === START BENCHMARK FOR {path} == ")
 
     # calculate average latency using `/` (root)
     url = f"{base_url}/"
@@ -75,7 +79,7 @@ def main(path=None):
         latencies.append(resp.elapsed)
 
     base_latency = average(latencies)
-    print("base latency:", base_latency.microseconds, file=sys.stderr)
+    eprint("base latency:", base_latency.microseconds)
 
     time.sleep(1)
 
@@ -89,7 +93,7 @@ def main(path=None):
         elapsed = response.elapsed - base_latency
         latencies.append(elapsed)
 
-    print(f"## {path} ##", file=sys.stderr)
+    eprint(f"## {path} ##")
     print_deltas(latencies)
 
     write_csv(latencies, sys.stdout)
