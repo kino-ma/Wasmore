@@ -1,5 +1,6 @@
 const Docker = require("dockerode");
 const streams = require("./stream");
+const debug = require("debug")("container-utils");
 
 const wait = require("./wait");
 const { measure } = require("./perf");
@@ -55,6 +56,7 @@ class Container {
     );
 
     this.elapsedTime.start = elapsed;
+    debug("elapsed time set:", this.elapsedTime);
 
     return stream;
   }
