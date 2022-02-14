@@ -49,11 +49,11 @@ class SwitchingInvoker extends ReusableInvoker {
     // console.log({ wasmEstimated, containerEstimated });
 
     // if (wasmEstimated <= containerEstimated) {
-    let { result } = await this.wasmInvoker.run(input);
-    return result;
+    // let { result } = await this.wasmInvoker.run(input);
+    // return result;
     // } else {
-    //   let { result } = await this.containerInvoker.run(input);
-    //   return result;
+    let { result } = await this.containerInvoker.run(input);
+    return result;
     // }
   }
 }
