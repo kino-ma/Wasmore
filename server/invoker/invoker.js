@@ -33,7 +33,7 @@ class ReusableInvoker {
 
   async setup() {
     if (!this._initialized) {
-      await this._init(this._initOptions);
+      await measure("invoker _init", () => this._init(this._initOptions));
       this._initialized = true;
     }
   }

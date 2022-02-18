@@ -12,9 +12,13 @@ class Container {
   constructor(options) {
     this._stdout = new streams.WritableStream();
 
-    this.container = docker.createContainer(options);
+    const { elpased, result: container } = measure("container create", () =>
+      docker.createContainer(options)
+    );
+    this.container = container;
 
     this.elapsedTime = {
+      create: elpased,
       start: null,
       attach: null,
       execCreate: null,

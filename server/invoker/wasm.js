@@ -15,7 +15,7 @@ class WasmInvoker extends ReusableInvoker {
   }
 
   async _init() {
-    await this._spawn();
+    await measure("thread spawn", () => this._spawn());
     measure("wasm worker init", () => this.worker.run("hello", "thread"));
   }
 
