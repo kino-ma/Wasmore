@@ -1,5 +1,6 @@
 const { ReusableInvoker } = require("./invoker");
 const { spawn, Thread, Worker } = require("threads");
+const wasm = require("faas-app");
 
 class WasmInvoker extends ReusableInvoker {
   constructor(funcName) {
@@ -26,7 +27,8 @@ class WasmInvoker extends ReusableInvoker {
       throw new Error("Worker is not initialized yet.");
     }
 
-    return this.worker.run(this.funcName, input);
+    return wasm[this.funcName](input);
+    // return this.worker.run(this.funcName, input);
   }
 }
 
