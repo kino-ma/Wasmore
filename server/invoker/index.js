@@ -33,28 +33,28 @@ class SwitchingInvoker extends ReusableInvoker {
 
   async _invoke(input) {
     // Run both on the first 3 calls
-    // if (this.elapsedTimeHistory.length < 3) {
-    //   const wasmRun = this.wasmInvoker.run(input);
-    //   const containerRun = this.containerInvoker.run(input);
+    if (this.elapsedTimeHistory.length < 3) {
+      const wasmRun = this.wasmInvoker.run(input);
+      const containerRun = this.containerInvoker.run(input);
 
-    //   const { result } = await Promise.any([wasmRun, containerRun]);
-    //   return result;
-    // }
+      const { result } = await Promise.any([wasmRun, containerRun]);
+      return result;
+    }
 
-    // console.log("wasm history", this.wasmInvoker.elapsedTimeHistory);
-    // const wasmEstimated = await this.wasmInvoker.estimateNext();
-    // console.log("container hisotry", this.containerInvoker.elapsedTimeHistory);
-    // const containerEstimated = await this.containerInvoker.estimateNext();
+    console.log("wasm history", this.wasmInvoker.elapsedTimeHistory);
+    const wasmEstimated = await this.wasmInvoker.estimateNext();
+    console.log("container hisotry", this.containerInvoker.elapsedTimeHistory);
+    const containerEstimated = await this.containerInvoker.estimateNext();
 
-    // console.log({ wasmEstimated, containerEstimated });
+    console.log({ wasmEstimated, containerEstimated });
 
-    // if (wasmEstimated <= containerEstimated) {
-    // let { result } = await this.wasmInvoker.run(input);
-    // return result;
-    // } else {
-    let { result } = await this.containerInvoker.run(input);
-    return result;
-    // }
+    if (wasmEstimated <= containerEstimated) {
+      let { result } = await this.wasmInvoker.run(input);
+      return result;
+    } else {
+      let { result } = await this.containerInvoker.run(input);
+      return result;
+    }
   }
 }
 
