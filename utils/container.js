@@ -12,13 +12,16 @@ class Container {
   constructor(options) {
     this._stdout = new streams.WritableStream();
 
-    const { elpased, result: container } = measure("container create", () =>
-      docker.createContainer(options)
+    measure("container create", () => docker.createContainer(options)).then(
+      ({ elapsed, result }) => {
+        this.container = result;
+        this.elapsedTime.create = elapsed;
+      }
     );
-    this.container = container;
+    this.container = null;
 
     this.elapsedTime = {
-      create: elpased,
+      create: null,
       start: null,
       attach: null,
       execCreate: null,
