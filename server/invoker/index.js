@@ -17,6 +17,8 @@ class SwitchingInvoker extends ReusableInvoker {
 
     this.containerInvoker = new ContainerInvoker(containerTask);
     this.wasmInvoker = new WasmInvoker(wasmFuncName);
+    // Asyncronously setup the threads
+    this.setup().then(() => console.log("initialized"));
   }
 
   async _init() {

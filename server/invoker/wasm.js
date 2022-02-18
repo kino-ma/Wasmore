@@ -1,6 +1,7 @@
 const { ReusableInvoker } = require("./invoker");
 const { spawn, Thread, Worker } = require("threads");
 const wasm = require("faas-app");
+const { measure } = require("../../utils/perf");
 
 class WasmInvoker extends ReusableInvoker {
   constructor(funcName) {
@@ -15,7 +16,8 @@ class WasmInvoker extends ReusableInvoker {
   }
 
   async _init() {
-    await this._spawn();
+    await measure("thread spawn", () => this._spawn());
+    measure("wasm worker init", () => this.worker.run("hello", "thread"));
   }
 
   async _fin() {
