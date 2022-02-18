@@ -8,62 +8,79 @@ usage_exit() {
     exit 1
 }
 
-name=${1:-}
-out_dir=${2:-.}
+out_dir=${1:-.}
 mkdir -p $out_dir
 
-if [[ -z "$name" ]]
-then
-    echo "please specify name" >&2
-    usage_exit
-fi
+run() {
+    export RUN_METHOD="${1}"
 
-# LIGHT
-task=light
-input=92
-path="/$task-task"
-python3 bench.py "$path" "$input" > "$out_dir/$name-$task.csv"
+    (
+        cd ..
+        make
+    ) &
+    server_proc=$!
 
-# HEAVY
-task=heavy
-input=50000000
-path="/$task-task"
-python3 bench.py "$path" "$input" > "$out_dir/$name-$task.csv"
+    sleep 10
 
-# MANY HEAVY
-task=heavy
-living_containers="$out_dir/$name-$task-living-containers.csv"
-echo "count,time,living-containers" > "$living_containers"
-# clean containers before counting many containers
-( cd .. && make clean-container )
+    # LIGHT
+    task=light
+    input=92
+    path="/$task-task"
+    python3 bench.py "$path" "$input" > "$out_dir/$RUN_METHOD-$task.csv"
 
-echo
-echo
-echo "start many"
-echo
+    # HEAVY
+    task=heavy
+    input=50000000
+    path="/$task-task"
+    python3 bench.py "$path" "$input" > "$out_dir/$RUN_METHOD-$task.csv"
 
-for count in {1..10}
-do
-    input=500
+    # MANY HEAVY
+    task=heavy
+    living_containers="$out_dir/$RUN_METHOD-$task-living-containers.csv"
+    echo "count,time,living-containers" > "$living_containers"
+    # clean containers before counting many containers
+    ( cd .. && make clean-container )
 
     echo
-    echo "-- many #$count --"
+    echo
+    echo "start many"
     echo
 
-    for i in {2..7}
+    for count in {1..10}
     do
-        path="/$task-tasks/$i"
-        python3 bench.py "$path" "$input" > "$out_dir/$name-$task-$input-$count.csv"
-        input+=0
-        sleep 1
+        input=500
+
+        echo
+        echo "-- many #$count --"
+        echo
+
+        for i in {2..7}
+        do
+            path="/$task-tasks/$i"
+            python3 bench.py "$path" "$input" > "$out_dir/$RUN_METHOD-$task-$input-$count.csv"
+            input+=0
+            sleep 1
+        done
+
+        time="$(date +%R:%S)"
+        # grep exists with 0 if none matched
+        containers="$(docker ps | grep -v 'CONTAINER ID' | wc -l || true)"
+        /bin/echo "number of containers: #$count ($time): $containers"
+        echo "$count,$time,$containers" >> $living_containers
+        echo
+        
+        sleep 5m
     done
 
-    time="$(date +%R:%S)"
-    # grep exists with 0 if none matched
-    containers="$(docker ps | grep -v 'CONTAINER ID' | wc -l || true)"
-    /bin/echo "number of containers: #$count ($time): $containers"
-    echo "$count,$time,$containers" >> $living_containers
-    echo
-    
-    sleep 5m
+    kill -9 $server_proc
+}
+
+for method in "proposed" "wasm" "container"
+do
+    time="$(date +%F_%R:%S)"
+    log_file="./log/${method}_${time}.log"
+
+    run "$method" | tee "$log_file"
+
+    sleep 10
 done
