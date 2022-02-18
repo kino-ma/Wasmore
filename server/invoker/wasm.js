@@ -29,8 +29,7 @@ class WasmInvoker extends ReusableInvoker {
       throw new Error("Worker is not initialized yet.");
     }
 
-    return wasm[this.funcName](input);
-    // return this.worker.run(this.funcName, input);
+    return this.worker.run(this.funcName, input);
   }
 }
 
