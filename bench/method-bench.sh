@@ -46,6 +46,12 @@ run() {
 
     for count in {1..10}
     do
+        task=light
+        input=92
+        path="/$task-task"
+        python3 bench.py "$path" "$input" > "$out_dir/$RUN_METHOD-$task-$input-$count.csv"
+
+        task=heavy
         input=500
 
         echo
