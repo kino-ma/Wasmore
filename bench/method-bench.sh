@@ -8,7 +8,7 @@ usage_exit() {
     exit 1
 }
 
-out_dir=${1:-.}
+out_dir=${1:-result}
 mkdir -p $out_dir
 
 run() {
@@ -38,8 +38,6 @@ run() {
     task=heavy
     living_containers="$out_dir/$RUN_METHOD-$task-living-containers.csv"
     echo "count,time,living-containers" > "$living_containers"
-    # clean containers before counting many containers
-    ( cd .. && make clean-container )
 
     echo
     echo
@@ -72,13 +70,16 @@ run() {
         sleep 5m
     done
 
-    kill $server_proc || kill -9 $server_proc
+    # kill all children?
+    ps -s $server_proc -o pid= | xargs kill
 }
 
 for method in "proposed" "wasm" "container"
 do
     time="$(date +%F_%R:%S)"
     log_file="./log/${method}_${time}.log"
+
+    ( cd .. && make clean-container )
 
     run "$method" | tee "$log_file"
 
