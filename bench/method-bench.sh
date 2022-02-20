@@ -72,7 +72,7 @@ run() {
         sleep 5m
     done
 
-    kill -9 $server_proc
+    kill $server_proc || kill -9 $server_proc
 }
 
 for method in "proposed" "wasm" "container"
