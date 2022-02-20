@@ -38,7 +38,7 @@ class Loop():
         first = self.first()
         rest = self.rest()
         rest_mean = mean(rest)
-        return first - rest_mean
+        return first / rest_mean - 1.0
 
 
 class Task():
