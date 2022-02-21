@@ -100,8 +100,8 @@ run() {
         sleep 5m
     done
 
-    # kill all children?
-    ps -s $server_proc -o pid= | xargs kill
+    # kill all node children
+    ps ax -o pid=,command | grep node | grep -vE 'vscode|grep' | awk '{print $1}' | xargs kill
 }
 
 for method in "proposed" "wasm" "container"
