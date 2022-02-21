@@ -1,6 +1,16 @@
 import csv
+from http.client import REQUEST_TIMEOUT
 from statistics import mean
 import sys
+
+
+METRICS1 = "min-coldstart"
+METRICS2 = "min-latency"
+METRICS3A = "max-min-coldstart"
+METRICS3B = "max-min-latency"
+
+FIELDS = ["name", "task", "input",
+          METRICS1, METRICS2, METRICS3A, METRICS3B]
 
 
 class Loop():
@@ -34,11 +44,14 @@ class Loop():
     def rest(self):
         return self.latencies[1:]
 
-    def diff_first(self):
+    def diff_first(self) -> float:
         first = self.first()
         rest = self.rest()
         rest_mean = mean(rest)
         return first / rest_mean - 1.0
+
+    def min_latency(self):
+        return min(self.latencies)
 
 
 class Task():
@@ -59,36 +72,38 @@ class Task():
     def append_loop(self, loop):
         self.loops.append(loop)
 
-    def diff_mean(self):
-        avgs = []
+    def max_min_diff(self):
+        min_diffs = [loop.diff_first() for loop in self.loops]
+        return max(min_diffs)
 
-        for loop in self.loops:
-            avg = loop.diff_first()
-            avgs.append(avg)
-
-        return mean(avgs)
+    def max_min_latency(self):
+        min_latencies = [loop.min_latency() for loop in self.loops]
+        return max(min_latencies)
 
     def as_dict(self):
         return {
             "name": self.name,
             "task": self.task,
             "input": self.inp,
-            "mean-diff": self.diff_mean(),
+            METRICS1: self.loops[0].diff_first(),
+            METRICS2: self.loops[0].min_latency(),
+            METRICS3A: self.max_min_diff(),
+            METRICS3B: self.max_min_latency(),
         }
 
 
 class Method():
-    def __init__(self, name, taskname):
+    def __init__(self, name, taskname, inputs):
         self.name = name
         self.taskname = taskname
         self.tasks: list[Task] = []
 
-        for inp in [5 * 10 ** n for n in range(2, 7+1)]:
+        for inp in inputs:
             task = Task(self.name, self.taskname, inp)
             self.tasks.append(task)
 
     def avg_loop_diffs(self):
-        means = [task.diff_mean() for task in self.tasks]
+        means = [task.diff() for task in self.tasks]
         return mean(means)
 
     def as_dict_list(self):
@@ -97,14 +112,18 @@ class Method():
 
 def main(out_file):
     records = []
+    proposed, wasm, container = ["proposed", "wasm", "container"]
+    methods = [proposed, wasm, container]
 
-    for name in ["proposed", "wasm", "container"]:
-        for taskname in ["heavy"]:
-            method = Method(name, taskname)
+    light_inputs = [92]
+    heavy_inputs = [5 * 10 ** n for n in range(2, 7+1)]
+
+    for name in methods:
+        for taskname, inputs in zip(["light", "heavy"], [light_inputs, heavy_inputs]):
+            method = Method(name, taskname, inputs)
             records += method.as_dict_list()
 
-    writer = csv.DictWriter(out_file, fieldnames=[
-                            "name", "task", "input", "mean-diff"])
+    writer = csv.DictWriter(out_file, fieldnames=FIELDS)
 
     writer.writeheader()
     writer.writerows(records)
