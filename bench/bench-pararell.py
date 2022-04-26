@@ -15,7 +15,7 @@ import requests
 
 REQUEST_COUNT = 1000
 BATCH_COUNT = 10
-INTERVAL = 0
+INTERVAL = 5
 
 
 @dataclass
@@ -112,8 +112,7 @@ def main(path=None, inp=None):
     loop_num = REQUEST_COUNT // BATCH_COUNT
     for loop in range(loop_num):
         time.sleep(INTERVAL)
-        # responses = request_concurrent(url, inp, BATCH_COUNT)
-        responses = list(range(BATCH_COUNT))
+        responses = request_concurrent(url, inp, BATCH_COUNT)
         for i, response in enumerate(responses):
             response = type('', (), {})()
             response.json = lambda: {"elapsed": i+100}
