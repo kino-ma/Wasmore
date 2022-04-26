@@ -46,7 +46,7 @@ run() {
     echo "start many $task"
     echo
 
-    for count in {1..10}
+    for count in {1..100}
     do
         echo
         echo "-- many #$count --"
@@ -64,31 +64,32 @@ run() {
         sleep 5m
     done
 
-    # MANY HEAVY
-    task=heavy
-    living_containers="$out_dir/$RUN_METHOD-$task-living-containers.csv"
-    echo "count,time,living-containers" > "$living_containers"
+    # # MANY HEAVY
+    # task=heavy
+    # living_containers="$out_dir/$RUN_METHOD-$task-living-containers.csv"
+    # echo "count,time,living-containers" > "$living_containers"
 
-    echo
-    echo
-    echo "start many heavy"
-    echo
+    # echo
+    # echo
+    # echo "start many heavy"
+    # echo
 
-    for count in {1..10}
-    do
-        input=500
+    # for count in {1..10}
+    # do
+    #     input=500
 
-        echo
-        echo "-- many #$count --"
-        echo
+    #     echo
+    #     echo "-- many #$count --"
+    #     echo
 
-        for i in {2..7}
-        do
-            path="/$task-tasks/$i"
-            python3 bench.py "$path" "$input" > "$out_dir/$RUN_METHOD-$task-$input-$count.csv"
-            input+=0
-            sleep 1
-        done
+        # for i in {2..7}
+        # do
+        #     path="/$task-tasks/$i"
+        #     python3 bench.py "$path" "$input" > "$out_dir/$RUN_METHOD-$task-$input-$count.csv"
+        #     input+=0
+        #     sleep 1
+        # done
+
 
         time="$(date +%R:%S)"
         # grep exists with 0 if none matched
@@ -96,7 +97,7 @@ run() {
         /bin/echo "number of containers: #$count ($time): $containers"
         echo "$count,$time,$containers" >> $living_containers
         echo
-        
+
         sleep 5m
     done
 
