@@ -60,11 +60,11 @@ def merge(name, task, inp, loopN, is_first=False):
 def main():
     is_first = True
     for name in ["proposed", "wasm", "container"]:
-        for task in ["heavy"]:
-            for inp in [5 * 10 ** n for n in range(2, 7+1)]:
-                for loopN in range(1, 10+1):
-                    merge(name, task, inp, loopN, is_first=is_first)
-                    is_first = False
+        for task in ["light"]:
+            inp = 92
+            for loopN in range(1, 100+1):
+                merge(name, task, inp, loopN, is_first=is_first)
+                is_first = False
 
 
 if __name__ == '__main__':
