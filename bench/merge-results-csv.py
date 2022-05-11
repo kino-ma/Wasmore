@@ -57,15 +57,26 @@ def merge(name, task, inp, loopN, is_first=False):
     merged.print_records(out_file=sys.stdout, write_header=is_first)
 
 
-def main():
+def main(name, task, inp):
     is_first = True
-    for name in ["proposed", "wasm", "container"]:
-        for task in ["light"]:
-            inp = 92
-            for loopN in range(1, 100+1):
-                merge(name, task, inp, loopN, is_first=is_first)
-                is_first = False
+    for loopN in range(1, 100+1):
+        merge(name, task, inp, loopN, is_first=is_first)
+        is_first = False
 
 
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) < 3:
+        print(f"usage: {sys.argv[0]} <METHOD_NAME> <TASK> [INPUT]")
+        exit(1)
+
+    name = sys.argv[1]
+    task = sys.argv[2]
+
+    print(name, task, file=sys.stderr)
+
+    if len(sys.argv) > 3:
+        inp = sys.argv[3]
+    else:
+        inp = 92 if "light" in task else 50000000
+
+    main(name, task, inp)
