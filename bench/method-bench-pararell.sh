@@ -8,7 +8,7 @@ usage_exit() {
     exit 1
 }
 
-out_dir=${1:-result}
+out_dir=${1:-result-pararell}
 mkdir -p $out_dir
 
 run() {
@@ -46,7 +46,7 @@ run() {
     echo "start many $task"
     echo
 
-    for count in {1..1000}
+    for count in {1..100}
     do
         echo
         echo "-- many #$count --"

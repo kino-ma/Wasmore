@@ -10,6 +10,7 @@ import csv
 import concurrent.futures as futures
 from concurrent.futures import ThreadPoolExecutor
 from typing import List
+from urllib.request import Request
 
 import requests
 
@@ -70,25 +71,24 @@ def send_request(url, input=None):
         return requests.get(url)
 
 
-def request_concurrent(url, input=None, count=10):
+def request_concurrent(url, input=None, count=10) -> List[requests.Response]:
     inputs = input
 
     if not isinstance(input, list):
         inputs = [input for _ in range(count)]
 
     with ThreadPoolExecutor(max_workers=count) as executor:
-        reqs = {executor.submit(send_request(
-            url, inputs[i]) for i in range(count))}
+        reqs = {executor.submit(send_request,
+                                url, inputs[i]): i for i in range(count)}
 
-    results = []
+    results: list[Request] = []
 
     for future in futures.as_completed(reqs):
-        try:
-            result = future.result()
-            results.append(result)
+        result = future.result()
+        results.append(result)
 
-        except Exception as e:
-            print(f"An error occured: {e}")
+    if len(results) < 1:
+        raise RuntimeError("No response returned")
 
     return results
 
@@ -114,10 +114,7 @@ def main(path=None, inp=None):
         time.sleep(INTERVAL)
         responses = request_concurrent(url, inp, BATCH_COUNT)
         for i, response in enumerate(responses):
-            response = type('', (), {})()
-            response.json = lambda: {"elapsed": i+100}
-            elapsedMs = response.json()["elapsed"]
-            elapsed = datetime.timedelta(milliseconds=elapsedMs)
+            elapsed = response.elapsed
             l = Latency(elapsed, loop, i)
             latencies.append(l)
 
