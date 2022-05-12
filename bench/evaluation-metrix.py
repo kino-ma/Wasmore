@@ -9,6 +9,16 @@ METRICS2 = "min-latency"
 METRICS3A = "max-min-coldstart"
 METRICS3B = "max-min-latency"
 
+SAMPLE_IDX = 65  # randomly choosed
+TASK_LOOP_COUNT = {
+    "light": {
+        92: 100
+    },
+    "heavy": {
+        50000000: 100
+    }
+}
+
 FIELDS = ["name", "task", "input",
           METRICS1, METRICS2, METRICS3A, METRICS3B]
 
@@ -80,13 +90,14 @@ class Task():
         min_latencies = [loop.min_latency() for loop in self.loops]
         return max(min_latencies)
 
-    def as_dict(self):
+    def as_dict(self, sample_idx=SAMPLE_IDX):
+        idx = min(len(self.loops) - 1, sample_idx)
         return {
             "name": self.name,
             "task": self.task,
             "input": self.inp,
-            METRICS1: self.loops[0].diff_first(),
-            METRICS2: self.loops[0].min_latency(),
+            METRICS1: self.loops[idx].diff_first(),
+            METRICS2: self.loops[idx].min_latency(),
             METRICS3A: self.max_min_diff(),
             METRICS3B: self.max_min_latency(),
         }
@@ -99,7 +110,13 @@ class Method():
         self.tasks: list[Task] = []
 
         for inp in inputs:
-            task = Task(self.name, self.taskname, inp)
+            loop_count = 10
+            try:
+                loop_count = TASK_LOOP_COUNT[taskname][inp]
+            except KeyError:
+                pass
+            task = Task(self.name, self.taskname, inp,
+                        loop_range=range(1, loop_count+1))
             self.tasks.append(task)
 
     def avg_loop_diffs(self):
