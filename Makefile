@@ -6,10 +6,10 @@ DOCKER_BIN_NAME := faas-bin
 UNAME := $(shell uname)
 
 ifeq (, $(shell which cargo))
-	CARGO := $(DOCKER_RUST_EXEC) cargo
 	DOCKER_RUST_CREATE := docker container create -it --name $(DOCKER_RUST_NAME) --volume "$$PWD/faas-app:/app" --workdir '/app' rust:latest bash
 	DOCKER_RUST_START := docker start $(DOCKER_RUST_NAME)
 	DOCKER_RUST_EXEC := docker exec -i faas-app-rust
+	CARGO := $(DOCKER_RUST_EXEC) cargo
 else
 	CARGO := cd faas-app && cargo
 	DOCKER_RUST_CREATE := echo "cargo exists"
@@ -71,7 +71,7 @@ check-rs: rust-container
 check-js:
 	find . \
 		-iname '*.js' \
-		-type f \
+type f \
 		-not -path './node_modules/*' \
 		-not -path './faas-app/pkg/*' \
 		-exec node --check {} \;
